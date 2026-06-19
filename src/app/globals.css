@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand-blue: #2563eb;
+  --color-brand-blue-hover: #1d4ed8;
+  --color-accent-blue: #3b82f6;
+  --color-aurora-start: #e0f2fe;
+  --color-aurora-mid: #dbeafe;
+  --color-aurora-end: #f0f9ff;
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-outfit);
+  --color-bg: #020617;
+
+--color-card: #0f172a;
+
+--color-border: #1e293b;
+
+--color-text: #f8fafc;
+
+--color-muted: #94a3b8;
+
+  --animate-aurora: aurora 60s linear infinite;
+
+  @keyframes aurora {
+    from {
+      background-position:
+        50% 50%,
+        50% 50%;
+    }
+    to {
+      background-position:
+        350% 50%,
+        350% 50%;
+    }
+  }
+
+  --animate-scroll: scroll var(--animation-duration, 40s)
+    var(--animation-direction, forwards) linear infinite;
+
+  @keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
+  }
+}
+
+@layer base {
+  html {
+  color-scheme: dark;
+}
+
+body {
+  @apply font-sans bg-slate-950 text-slate-100;
+  min-height: 100vh;
+}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .bg-aurora {
+  background:
+    radial-gradient(circle at top left,
+      rgba(59,130,246,.18),
+      transparent 40%),
+
+    radial-gradient(circle at bottom right,
+      rgba(14,165,233,.12),
+      transparent 40%),
+
+    #020617;
+}
+
+.bg-aurora-fade {
+  background:
+    linear-gradient(
+      180deg,
+      #020617 0%,
+      #0f172a 50%,
+      #020617 100%
+    );
+}
+}
