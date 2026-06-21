@@ -21,7 +21,7 @@ export default function FiltersBar({
   readOnly = false,
 }: FiltersBarProps) {
   return (
-    <div className="sticky top-18 z-30 mb-8 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div className="sticky top-[4.5rem] z-30 mb-8 bg-white/80 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div className="overflow-x-auto no-scrollbar">
           <div className="flex gap-2">

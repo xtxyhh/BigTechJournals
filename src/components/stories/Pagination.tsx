@@ -11,8 +11,6 @@ interface PaginationProps {
 }
 
 export default function Pagination({
-  currentPage,
-  totalPages,
   onLoadMore,
   isLoadingMore = false,
   totalStories,

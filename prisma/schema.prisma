@@ -8,117 +8,136 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-enum SubmissionStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  name      String?
-  email     String   @unique
-  image     String?
-  role      Role     @default(USER)
-  banned    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  comments          Comment[]
-  likes             Like[]
+  id                String             @id @default(cuid())
+  clerkId           String             @unique
+  name              String?
+  email             String             @unique
+  image             String?
+  role              Role               @default(USER)
+  banned            Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   bookmarks         Bookmark[]
   categoryFollowers CategoryFollower[]
+  comments          Comment[]
+  contentLikes      ContentLike[]
+  likes             Like[]
 
   @@index([clerkId])
   @@index([email])
 }
 
 model Company {
-  id               String   @id @default(cuid())
+  id               String            @id @default(cuid())
   name             String
-  slug             String   @unique
+  slug             String            @unique
   logo             String?
-  description      String   @db.Text
+  description      String
   interviewProcess Json?
   roadmap          Json?
   resources        Json?
   salaryInfo       Json?
   faqs             Json?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  stories     Story[]
-  submissions StorySubmission[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  interviewPattern String?
+  salaryRange      String?
+  tags             String[]
+  stories          Story[]
+  companyInterviews CompanyInterview[]
+  bookmarks         Bookmark[]
+  careerSwitches    CareerSwitch[]
+  interviewExperiences InterviewExperience[]
+  internships      Internship[]
+  resourceItems    Resource[]
+  roadmaps         Roadmap[]
+  submissions      StorySubmission[]
 
   @@index([slug])
 }
 
 model Category {
-  id          String  @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
-  slug        String  @unique
-  description String? @db.Text
+  slug        String             @unique
+  description String?
   icon        String?
   image       String?
-
-  stories   StoryCategory[]
-  followers CategoryFollower[]
+  sortOrder   Int                @default(0)
+  featured    Boolean            @default(false)
+  followers   CategoryFollower[]
+  stories     StoryCategory[]
   submissions StorySubmission[]
 
   @@index([slug])
+  @@index([sortOrder])
 }
 
 model Story {
-  id             String   @id @default(cuid())
-  title          String
-  slug           String   @unique
-  excerpt        String   @db.Text
-  content        String   @db.Text
-  coverImage     String?
-  companyId      String?
-  authorName     String
-  authorImage    String?
-  authorRole     String?
-  linkedin       String?
-  twitter        String?
-  instagram      String?
-  published      Boolean  @default(false)
-  featured       Boolean  @default(false)
-  views          Int      @default(0)
-  readTime       Int      @default(5)
-  outcomeType    String?
-  outcomeText    String?
-  careerStage    String?
-  seoTitle       String?
-  seoDescription String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  company  Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  categories StoryCategory[]
-  comments Comment[]
-  likes    Like[]
-  bookmarks Bookmark[]
+  id               String          @id @default(cuid())
+  title            String
+  slug             String          @unique
+  excerpt          String
+  content          String
+  coverImage       String?
+  companyId        String?
+  authorName       String
+  authorImage      String?
+  authorRole       String?
+  linkedin         String?
+  twitter          String?
+  instagram        String?
+  published        Boolean         @default(false)
+  featured         Boolean         @default(false)
+  views            Int             @default(0)
+  readTime         Int             @default(5)
+  outcomeType      String?
+  outcomeText      String?
+  careerStage      String?
+  seoTitle         String?
+  seoDescription   String?
+  scheduledAt      DateTime?
+  publishedAt      DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  advice           Json?
+  candidatePhoto   String?
+  canonicalUrl     String?
+  country          String?
+  currentCompany   String?
+  experience       String?
+  github           String?
+  interviewProcess Json?
+  mistakes         Json?
+  previousCompany  String?
+  resources        Json?
+  salary           String?
+  seoKeywords      String?
+  timeline         Json?
+  trending         Boolean         @default(false)
+  bookmarks        Bookmark[]
+  comments         Comment[]
+  likes            Like[]
+  company          Company?        @relation(fields: [companyId], references: [id])
+  categories       StoryCategory[]
 
   @@index([slug])
   @@index([published, featured])
+  @@index([published, trending])
   @@index([published, createdAt])
   @@index([published, views])
   @@index([companyId])
+  @@index([deletedAt])
+  @@index([scheduledAt])
 }
 
 model StoryCategory {
   storyId    String
   categoryId String
-
-  story    Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  story      Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
 
   @@id([storyId, categoryId])
 }
@@ -129,77 +148,517 @@ model StorySubmission {
   email        String
   linkedin     String?
   storyTitle   String
-  storyContent String           @db.Text
+  storyContent String
   resumeUrl    String?
-  notes        String?          @db.Text
+  notes        String?
   status       SubmissionStatus @default(PENDING)
   categoryId   String?
   companyId    String?
   submittedAt  DateTime         @default(now())
   reviewedAt   DateTime?
   reviewNotes  String?
-
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  category     Category?        @relation(fields: [categoryId], references: [id])
+  company      Company?         @relation(fields: [companyId], references: [id])
 
   @@index([status])
   @@index([email])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   storyId   String
   userId    String
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime  @default(now())
+  deleted   Boolean   @default(false)
+  likes     Int       @default(0)
+  parentId  String?
+  reported  Boolean   @default(false)
+  updatedAt DateTime  @updatedAt
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  story     Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([storyId])
   @@index([userId])
+  @@index([parentId])
+  @@index([reported])
 }
 
 model Like {
   userId    String
   storyId   String
   createdAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, storyId])
   @@index([storyId])
 }
 
 model Bookmark {
-  userId    String
-  storyId   String
-  createdAt DateTime @default(now())
+  id                    String               @id @default(cuid())
+  userId                String
+  storyId               String?
+  resourceId            String?
+  internshipId          String?
+  roadmapId             String?
+  careerSwitchId        String?
+  interviewExperienceId String?
+  companyId             String?
+  createdAt             DateTime             @default(now())
+  careerSwitch          CareerSwitch?        @relation(fields: [careerSwitchId], references: [id], onDelete: Cascade)
+  company               Company?             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  internship            Internship?          @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  interviewExperience   InterviewExperience? @relation(fields: [interviewExperienceId], references: [id], onDelete: Cascade)
+  resource              Resource?            @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  roadmap               Roadmap?             @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  story                 Story?               @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
-
-  @@id([userId, storyId])
+  @@unique([userId, storyId])
+  @@unique([userId, resourceId])
+  @@unique([userId, internshipId])
+  @@unique([userId, roadmapId])
+  @@unique([userId, careerSwitchId])
+  @@unique([userId, interviewExperienceId])
+  @@unique([userId, companyId])
   @@index([storyId])
+  @@index([resourceId])
+  @@index([internshipId])
+  @@index([roadmapId])
+  @@index([careerSwitchId])
+  @@index([interviewExperienceId])
+  @@index([companyId])
 }
 
 model CategoryFollower {
   userId     String
   categoryId String
   createdAt  DateTime @default(now())
-
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, categoryId])
   @@index([categoryId])
 }
 
 model StoryView {
-  id        String   @id @default(cuid())
-  storyId   String
-  viewedAt  DateTime @default(now())
+  id       String   @id @default(cuid())
+  storyId  String
+  viewedAt DateTime @default(now())
 
   @@index([storyId, viewedAt])
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  active       Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+
+  @@index([email])
+  @@index([subscribedAt])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+  @@index([createdAt])
+}
+
+model SiteSettings {
+  id                    String   @id @default("site")
+  heroTitle             String   @default("Learn From People Who Cracked Big Tech")
+  heroSubtitle          String   @default("Stories. Interview Experiences. Preparation Guides. Resources. Everything in one place.")
+  heroCtaPrimaryLabel   String   @default("Start Reading")
+  heroCtaPrimaryHref    String   @default("/stories")
+  heroCtaSecondaryLabel String   @default("Explore Stories")
+  heroCtaSecondaryHref  String   @default("/trending")
+  heroGradient          String?
+  heroBackgroundImage   String?
+  announcementEnabled   Boolean  @default(false)
+  announcementText      String?
+  footerTagline         String   @default("Empowering engineers with real stories, roadmaps, and insights from the industry's best.")
+  contactEmail          String   @default("hello@bigtechjournals.com")
+  contactPhone          String?
+  contactAddress        String?
+  socialTwitter         String?
+  socialLinkedin        String?
+  socialInstagram       String?
+  seoDefaultTitle       String   @default("BigTechJournals — Learn From People Who Cracked Big Tech")
+  seoDefaultDescription String   @default("Real journeys. Interview experiences. Preparation guides. Resources.")
+  newsletterTitle       String   @default("Subscribe")
+  newsletterDescription String   @default("Subscribe to our newsletter & stay updated with the latest engineering stories and insights.")
+  updatedAt             DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([createdAt])
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  filename   String
+  url        String
+  type       String
+  size       Int
+  mimeType   String
+  alt        String?
+  folder     String?
+  tags       String[]
+  uploadedBy String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([folder])
+  @@index([type])
+  @@index([uploadedBy])
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  name        String
+  title       String?
+  slug        String?  @unique
+  type        String
+  url         String
+  description String?
+  content     String?
+  coverImage  String?
+  authorName  String?
+  difficulty  String?
+  thumbnail   String?
+  timeRequired String?
+  companyId   String?
+  sortOrder   Int      @default(0)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  views       Int      @default(0)
+  seoTitle    String?
+  seoDescription String?
+  tags        String[]
+  bookmarks   Bookmark[]
+  company     Company? @relation(fields: [companyId], references: [id])
+  likes       ContentLike[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([type])
+  @@index([difficulty])
+  @@index([published, featured])
+  @@index([companyId])
+}
+
+model Internship {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  description    String
+  coverImage     String?
+  authorName     String?
+  companyId      String?
+  location       String?
+  remote         Boolean       @default(false)
+  stipend        String?
+  deadline       DateTime?
+  applyUrl       String?
+  difficulty     String?
+  timeRequired   String?
+  tags           String[]
+  featured       Boolean       @default(false)
+  published      Boolean       @default(false)
+  views          Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  sortOrder      Int           @default(0)
+  bookmarks      Bookmark[]
+  company        Company?      @relation(fields: [companyId], references: [id])
+  likes          ContentLike[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([published, featured])
+  @@index([companyId])
+  @@index([deadline])
+  @@index([remote])
+}
+
+model Roadmap {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  description    String
+  coverImage     String?
+  authorName     String?
+  companyId      String?
+  role           String?
+  difficulty     String?
+  timeRequired   String?
+  nodes          Json?
+  tags           String[]
+  featured       Boolean       @default(false)
+  published      Boolean       @default(false)
+  views          Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  sortOrder      Int           @default(0)
+  bookmarks      Bookmark[]
+  company        Company?      @relation(fields: [companyId], references: [id])
+  likes          ContentLike[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([published, featured])
+  @@index([companyId])
+}
+
+model CareerSwitch {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  description    String
+  content        String
+  coverImage     String?
+  authorName     String?
+  fromRole       String?
+  toRole         String?
+  companyId      String?
+  difficulty     String?
+  timeRequired   String?
+  tags           String[]
+  featured       Boolean       @default(false)
+  published      Boolean       @default(false)
+  views          Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  sortOrder      Int           @default(0)
+  bookmarks      Bookmark[]
+  company        Company?      @relation(fields: [companyId], references: [id])
+  likes          ContentLike[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([published, featured])
+  @@index([companyId])
+}
+
+model InterviewExperience {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  description    String
+  content        String
+  coverImage     String?
+  authorName     String?
+  companyId      String?
+  role           String?
+  outcome        String?
+  difficulty     String?
+  timeRequired   String?
+  tags           String[]
+  featured       Boolean       @default(false)
+  published      Boolean       @default(false)
+  views          Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  sortOrder      Int           @default(0)
+  bookmarks      Bookmark[]
+  company        Company?      @relation(fields: [companyId], references: [id])
+  likes          ContentLike[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([published, featured])
+  @@index([companyId])
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String?
+  page      String?
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([page])
+  @@index([published, sortOrder])
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  role        String?
+  company     String?
+  quote       String
+  image       String?
+  rating      Int?
+  sortOrder   Int      @default(0)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, featured])
+  @@index([sortOrder])
+}
+
+model HomepageSection {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  subtitle    String?
+  type        String
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  contentIds  String[]
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([enabled, sortOrder])
+}
+
+model NavbarItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String
+  parentId  String?
+  sortOrder Int      @default(0)
+  enabled   Boolean  @default(true)
+  external  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([enabled, sortOrder])
+}
+
+model FooterLink {
+  id        String   @id @default(cuid())
+  label     String
+  href      String
+  group     String   @default("Product")
+  sortOrder Int      @default(0)
+  enabled   Boolean  @default(true)
+  external  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([enabled, sortOrder])
+  @@index([group])
+}
+
+model SEOPage {
+  id          String   @id @default(cuid())
+  path        String   @unique
+  title       String
+  description String
+  image       String?
+  keywords    String?
+  noIndex     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ThemeConfig {
+  id             String   @id @default("theme")
+  logo           String?
+  favicon        String?
+  mode           String   @default("dark")
+  background     String   @default("#050816")
+  surface        String   @default("rgba(255,255,255,0.05)")
+  border         String   @default("rgba(255,255,255,0.08)")
+  accent         String   @default("#3b82f6")
+  radius         Int      @default(24)
+  glassIntensity String   @default("xl")
+  headingFont    String?
+  bodyFont       String?
+  navbarSettings Json?
+  footerSettings Json?
+  updatedAt      DateTime @updatedAt
+}
+
+model CompanyInterview {
+  id             String   @id @default(cuid())
+  companyId      String
+  title          String
+  role           String?
+  level          String?
+  process        Json?
+  questions      Json?
+  tips           Json?
+  difficulty     String?
+  published      Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([published, sortOrder])
+}
+
+model ContentLike {
+  id                    String               @id @default(cuid())
+  userId                String
+  resourceId            String?
+  internshipId          String?
+  roadmapId             String?
+  careerSwitchId        String?
+  interviewExperienceId String?
+  createdAt             DateTime             @default(now())
+  careerSwitch          CareerSwitch?        @relation(fields: [careerSwitchId], references: [id], onDelete: Cascade)
+  internship            Internship?          @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  interviewExperience   InterviewExperience? @relation(fields: [interviewExperienceId], references: [id], onDelete: Cascade)
+  resource              Resource?            @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  roadmap               Roadmap?             @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@unique([userId, internshipId])
+  @@unique([userId, roadmapId])
+  @@unique([userId, careerSwitchId])
+  @@unique([userId, interviewExperienceId])
+  @@index([resourceId])
+  @@index([internshipId])
+  @@index([roadmapId])
+  @@index([careerSwitchId])
+  @@index([interviewExperienceId])
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  EDITOR
+  WRITER
+  VIEWER
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

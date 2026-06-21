@@ -1,9 +1,8 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const TESTIMONIALS = [
   {
@@ -69,32 +68,23 @@ const TESTIMONIALS = [
 ];
 
 export default function Testimonials() {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 mb-16">
-        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2 block">
+    <section className="py-24 bg-surface overflow-hidden relative">
+      <div className="absolute inset-0 bg-aurora opacity-25 pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mb-16 relative z-10">
+        <span className="text-sm font-semibold text-surface-muted uppercase tracking-wider mb-2 block">
           Testimonials
         </span>
-        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-          Don't take our word for it!
+        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+          Don&apos;t take our word for it!
           <br />
-          <span className="text-slate-500">Hear it from our partners.</span>
+          <span className="text-surface-muted">Hear it from our partners.</span>
         </h2>
       </div>
 
-      <div
-        className="relative w-full"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+      <div className="relative w-full overflow-x-hidden">
         <div
-          className={cn(
-            "flex gap-6 w-max animate-scroll hover:[animation-play-state:paused]",
-            // We duplicate items to create seamless loop
-            "ml-4",
-          )}
+          className="flex gap-6 w-max animate-scroll hover:[animation-play-state:paused] ml-4"
           style={
             {
               "--animation-duration": "60s",
@@ -102,15 +92,12 @@ export default function Testimonials() {
             } as React.CSSProperties
           }
         >
-          {/* First set of items */}
           {TESTIMONIALS.map((item) => (
             <TestimonialCard key={`original-${item.id}`} item={item} />
           ))}
-          {/* Second set of items for seamless loop */}
           {TESTIMONIALS.map((item) => (
             <TestimonialCard key={`duplicate-${item.id}`} item={item} />
           ))}
-          {/* Third set of items for wider screens to ensure loop is smooth */}
           {TESTIMONIALS.map((item) => (
             <TestimonialCard key={`triplicate-${item.id}`} item={item} />
           ))}
@@ -124,53 +111,49 @@ function TestimonialCard({ item }: { item: (typeof TESTIMONIALS)[0] }) {
   return (
     <Link
       href={item.link}
-      className="block group relative w-[350px] md:w-[400px] h-[450px] shrink-0 bg-white rounded-4xl p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl overflow-hidden cursor-pointer"
+      className="block group relative w-[min(350px,calc(100vw-2rem))] md:w-[400px] h-[450px] shrink-0 bg-surface-card rounded-4xl p-8 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-card-hover overflow-hidden cursor-pointer border border-surface-border"
     >
-      {/* Hover Background Image (Story Thumbnail) */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
         <Image
           src={item.storyImage}
           alt={item.name}
           fill
+          sizes="400px"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center pl-1 transition-transform duration-300 group-hover:scale-110">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center pl-1 transition-transform duration-200 group-hover:scale-110">
             <Play className="w-8 h-8 text-white fill-white" />
           </div>
         </div>
-        {/* Overlay Text on Hover */}
-        <div className="absolute bottom-0 left-0 p-8 w-full text-white bg-linear-to-t from-black/80 to-transparent">
+        <div className="absolute bottom-0 left-0 p-8 w-full text-white bg-gradient-to-t from-black/80 to-transparent">
           <p className="font-script text-3xl mb-1">{item.name}</p>
           <p className="text-sm opacity-90">{item.role}</p>
         </div>
       </div>
 
-      {/* Default Content (Quote) */}
       <div className="relative z-0 h-full flex flex-col justify-between group-hover:opacity-0 transition-opacity duration-300">
         <div className="flex-1">
-          {/* Avatar */}
-          <div className="mb-6 relative w-12 h-12 rounded-full overflow-hidden border-2 border-slate-100">
+          <div className="mb-6 relative w-12 h-12 rounded-full overflow-hidden border-2 border-surface-border">
             <Image
               src={item.avatar}
               alt={item.name}
               fill
+              sizes="48px"
               className="object-cover"
             />
           </div>
 
-          {/* Quote */}
-          <blockquote className="text-lg text-slate-800 leading-relaxed font-medium">
-            "{item.quote}"
+          <blockquote className="text-lg text-white leading-relaxed font-medium">
+            &ldquo;{item.quote}&rdquo;
           </blockquote>
         </div>
 
-        {/* Footer */}
         <div className="mt-8">
-          <div className="font-script text-2xl text-slate-400 mb-1">
+          <div className="font-script text-2xl text-surface-muted mb-1">
             {item.name}
           </div>
-          <div className="text-sm text-slate-400 font-medium">{item.role}</div>
+          <div className="text-sm text-surface-muted font-medium">{item.role}</div>
         </div>
       </div>
     </Link>

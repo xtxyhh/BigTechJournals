@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -11,30 +11,54 @@ import { SearchButton } from "@/components/SearchModal";
 
 const NAV_LINKS = [
   { name: "Stories", href: "/stories" },
-  { name: "Internships", href: "/category/internships" },
-  { name: "Career Switch", href: "/category/career-switch" },
-  { name: "Companies", href: "/stories?tab=companies" },
+  { name: "Companies", href: "/companies" },
+  { name: "Internships", href: "/internships" },
+  { name: "Resources", href: "/resources" },
+  { name: "Trending", href: "/trending" },
+  { name: "About", href: "/about" },
   { name: "Submit", href: "/submit" },
 ];
 
 function NavbarContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href.split("?")[0]) && href !== "#";
   };
 
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <>
-      <nav className="fixed top-4 left-0 right-0 z-50 px-4 pointer-events-none">
-        <div className="max-w-7xl mx-auto pointer-events-auto backdrop-blur-xl bg-white/70 border border-white/20 shadow-sm rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300">
-          <div className="flex items-center gap-8">
+      <nav
+        className="sticky top-0 z-50 safe-top px-4 pt-4 pb-2"
+        aria-label="Main navigation"
+      >
+        <div className="absolute left-1/2 -top-5 -translate-x-1/2 w-[500px] h-[120px] rounded-full bg-blue-500/10 blur-[90px] pointer-events-none" />
+        <div
+          className={cn(
+            "relative max-w-7xl mx-auto",
+            "backdrop-blur-3xl",
+            "bg-[linear-gradient(180deg,rgba(17,17,17,.88),rgba(17,17,17,.72))]",
+            "border border-white/[0.08]",
+            "shadow-[0_10px_50px_rgba(0,0,0,.45),0_0_0_1px_rgba(255,255,255,.03),0_0_80px_rgba(59,130,246,.08)]",
+            "rounded-full px-4 sm:px-7 h-14 sm:h-16",
+            "flex items-center justify-between",
+            "transition-all duration-300",
+          )}
+        >
+          <div className="flex items-center gap-4 sm:gap-8 min-w-0">
             <Link
               href="/"
-              className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2"
+              className="text-base sm:text-xl font-bold text-white tracking-tight truncate shrink-0"
             >
               Big Tech Journals
             </Link>
@@ -47,8 +71,8 @@ function NavbarContent() {
                   className={cn(
                     "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                     isActive(link.href)
-                      ? "text-brand-blue bg-blue-50/80 shadow-sm"
-                      : "text-slate-600 hover:text-brand-blue hover:bg-slate-50/50",
+                      ? "text-blue-300 bg-blue-500/10 border border-blue-400/10 shadow-[0_0_30px_rgba(59,130,246,.12)]"
+                      : "text-surface-muted hover:text-blue-300 hover:bg-white/[0.05] hover:shadow-[0_0_20px_rgba(59,130,246,.08)]",
                   )}
                 >
                   {link.name}
@@ -57,10 +81,10 @@ function NavbarContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 shrink-0">
             <Link
               href="/submit"
-              className="hidden md:block text-sm font-medium text-slate-600 hover:text-brand-blue transition-colors px-4 py-2 hover:bg-slate-50/50 rounded-full"
+              className="hidden md:block text-sm font-medium text-surface-muted hover:text-blue-400 transition-colors px-4 py-2 hover:bg-white/[0.05] rounded-full"
             >
               Submit your Story
             </Link>
@@ -69,7 +93,7 @@ function NavbarContent() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/profile"
-                  className="hidden md:block text-sm font-medium text-slate-600 hover:text-brand-blue px-3 py-2"
+                  className="hidden md:block text-sm font-medium text-surface-muted hover:text-blue-400 px-3 py-2 transition-colors"
                 >
                   Profile
                 </Link>
@@ -77,14 +101,21 @@ function NavbarContent() {
               </div>
             ) : (
               <SignInButton mode="modal">
-                <button className="hidden md:block px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-full hover:bg-slate-800 transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                <button
+                  type="button"
+                  className="hidden md:block px-7 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-cyan-500 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                >
                   Sign In
                 </button>
               </SignInButton>
             )}
             <button
-              className="md:hidden p-2.5 text-slate-600 hover:bg-slate-100 rounded-full transition-colors z-50 relative"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              type="button"
+              className="md:hidden p-2.5 text-surface-muted hover:text-white hover:bg-white/[0.05] rounded-full transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav-menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -94,52 +125,69 @@ function NavbarContent() {
 
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
-            className="fixed inset-x-4 top-24 z-40 p-6 bg-white/95 backdrop-blur-2xl border border-slate-200/50 shadow-2xl rounded-3xl md:hidden origin-top"
-          >
-            <div className="flex flex-col space-y-2">
-              {NAV_LINKS.map((link) => (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              id="mobile-nav-menu"
+              initial={{ opacity: 0, scale: 0.98, y: -12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: -12 }}
+              transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+              className="fixed inset-x-4 top-[calc(env(safe-area-inset-top,0px)+5rem)] z-50 p-6 bg-surface-card/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-3xl md:hidden origin-top"
+            >
+              <div className="flex flex-col space-y-2">
+                {NAV_LINKS.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={cn(
+                      "px-4 py-3 rounded-xl text-lg font-medium transition-all duration-200",
+                      isActive(link.href)
+                        ? "text-brand-blue bg-blue-500/10"
+                        : "text-white hover:bg-white/[0.05]",
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                <hr className="border-white/[0.08] my-4" />
                 <Link
-                  key={link.name}
-                  href={link.href}
-                  className={cn(
-                    "px-4 py-3 rounded-xl text-lg font-medium transition-all duration-200 flex items-center justify-between group",
-                    isActive(link.href) ? "text-brand-blue bg-blue-50" : "text-slate-900 hover:bg-slate-50",
-                  )}
+                  href="/submit"
+                  className="px-4 py-3 text-lg font-medium text-white hover:text-brand-blue transition-colors hover:bg-white/[0.05] rounded-xl"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {link.name}
+                  Submit your Story
                 </Link>
-              ))}
-              <hr className="border-slate-100 my-4" />
-              <Link
-                href="/submit"
-                className="px-4 py-3 text-lg font-medium text-slate-900 hover:text-brand-blue transition-colors hover:bg-slate-50 rounded-xl"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Submit your Story
-              </Link>
-              {!isSignedIn ? (
-                <SignInButton mode="modal">
-                  <button className="w-full mt-2 px-5 py-3.5 bg-slate-900 text-white text-base font-medium rounded-xl">
-                    Sign In
-                  </button>
-                </SignInButton>
-              ) : (
-                <Link
-                  href="/profile"
-                  className="w-full mt-2 px-5 py-3.5 bg-slate-900 text-white text-base font-medium rounded-xl text-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-              )}
-            </div>
-          </motion.div>
+                {!isSignedIn ? (
+                  <SignInButton mode="modal">
+                    <button
+                      type="button"
+                      className="w-full mt-2 px-5 py-3.5 bg-surface-elevated text-white text-base font-medium rounded-xl hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200"
+                    >
+                      Sign In
+                    </button>
+                  </SignInButton>
+                ) : (
+                  <Link
+                    href="/profile"
+                    className="w-full mt-2 px-5 py-3.5 bg-surface-elevated text-white text-base font-medium rounded-xl text-center hover:bg-white/[0.08] transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

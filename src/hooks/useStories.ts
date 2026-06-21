@@ -123,6 +123,8 @@ export function useSearch() {
     stories: { id: string; title: string; slug: string; authorName: string }[];
     companies: { id: string; name: string; slug: string; logo: string | null }[];
     categories: { id: string; name: string; slug: string }[];
+    resources: { id: string; name: string; type: string; url: string }[];
+    users: { id: string; name: string | null; image: string | null }[];
   } | null>(null);
   const [loading, setLoading] = useState(false);
 

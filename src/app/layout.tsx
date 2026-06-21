@@ -16,7 +16,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "BigTechJournals — Learn From People Who Cracked Big Tech",
+    default: "BigTechJournals - Learn From People Who Cracked Big Tech",
     template: "%s | BigTechJournals",
   },
   description:
@@ -53,7 +53,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 text-slate-900 font-sans`}
+          className={`${inter.variable} ${outfit.variable} antialiased bg-surface text-white font-sans`}
         >
           {children}
         </body>

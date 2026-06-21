@@ -27,7 +27,7 @@ export async function getCompanyBySlug(slug: string) {
 
 export async function getAllCategories() {
   return db.category.findMany({
-    orderBy: { name: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: { _count: { select: { stories: true } } },
   });
 }

@@ -30,53 +30,62 @@ export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-24 bg-slate-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-surface relative overflow-hidden">
+      <div className="absolute inset-0 bg-aurora opacity-20 pointer-events-none" />
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-900 mt-4 mb-4">
+          <h2 className="text-3xl font-bold text-white mt-4 mb-4">
             (FAQ) Questions And Answers
           </h2>
-          <p className="text-slate-500">
+          <p className="text-surface-muted">
             Find answers to common questions and get detailed information about
             our platform.
           </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
-            >
-              <button
-                onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
-                className="w-full flex items-center justify-between p-6 text-left"
+          {faqs.map((faq, idx) => {
+            const isOpen = activeIndex === idx;
+            return (
+              <div
+                key={idx}
+                className="bg-surface-card rounded-2xl border border-surface-border overflow-hidden"
               >
-                <span className="font-bold text-slate-900">{faq.question}</span>
-                <span className="p-2 bg-slate-100 rounded-full text-slate-500 transition-colors hover:bg-slate-200">
-                  {activeIndex === idx ? (
-                    <Minus className="w-4 h-4" />
-                  ) : (
-                    <Plus className="w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex(isOpen ? null : idx)}
+                  className="w-full flex items-center justify-between p-6 text-left"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${idx}`}
+                >
+                  <span className="font-bold text-white">{faq.question}</span>
+                  <span className="p-2 bg-surface-elevated rounded-full text-surface-muted transition-colors duration-200 hover:bg-white/[0.1]">
+                    {isOpen ? (
+                      <Minus className="w-4 h-4" aria-hidden="true" />
+                    ) : (
+                      <Plus className="w-4 h-4" aria-hidden="true" />
+                    )}
+                  </span>
+                </button>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      id={`faq-panel-${idx}`}
+                      role="region"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6 text-surface-muted leading-relaxed text-sm">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
                   )}
-                </span>
-              </button>
-              <AnimatePresence>
-                {activeIndex === idx && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                  >
-                    <div className="px-6 pb-6 text-slate-500 leading-relaxed text-sm">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

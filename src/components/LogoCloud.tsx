@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface Company {
   name: string;
@@ -24,9 +25,9 @@ export default function LogoCloud({ companies }: LogoCloudProps) {
     : FALLBACK_LOGOS;
 
   return (
-    <section className="py-10 pt-20 border-b border-gray-100 bg-white/50 backdrop-blur-sm">
+    <section className="py-10 pt-20 border-b border-surface-border bg-surface/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">
+        <p className="text-center text-sm font-semibold text-surface-muted uppercase tracking-widest mb-8">
           Trusted by engineers from
         </p>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
@@ -34,12 +35,14 @@ export default function LogoCloud({ companies }: LogoCloudProps) {
             <Link
               key={logo.slug}
               href={`/company/${logo.slug}`}
-              className="hover:opacity-100 transition-opacity"
+              className="hover:opacity-100 transition-opacity relative h-6 md:h-8 w-24 md:w-28"
             >
-              <img
+              <Image
                 src={logo.logo!}
                 alt={logo.name}
-                className="h-6 md:h-8 w-auto object-contain"
+                fill
+                sizes="112px"
+                className="object-contain"
               />
             </Link>
           ))}

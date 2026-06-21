@@ -11,25 +11,37 @@ import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
 import { getFeaturedStories, getTrendingStories, getLatestStories } from "@/lib/stories";
 import { getAllCompanies, getAllCategories } from "@/lib/companies";
+import { getSiteSettings } from "@/lib/settings";
 import { buildMetadata } from "@/lib/seo";
 
-export const metadata = buildMetadata({
-  title: "Learn From People Who Cracked Big Tech",
-  description:
-    "Stories. Interview Experiences. Preparation Guides. Resources. Everything in one place to help students and professionals crack Big Tech.",
-  path: "/",
-});
+export async function generateMetadata() {
+  try {
+    const settings = await getSiteSettings();
+    return buildMetadata({
+      title: settings.seoDefaultTitle.replace(" | BigTechJournals", "").replace("BigTechJournals — ", ""),
+      description: settings.seoDefaultDescription,
+      path: "/",
+    });
+  } catch {
+    return buildMetadata({
+      title: "Learn From People Who Cracked Big Tech",
+      description: "Stories. Interview Experiences. Preparation Guides. Resources.",
+      path: "/",
+    });
+  }
+}
 
 export const revalidate = 3600;
 
 async function getHomeData() {
   try {
-    const [featuredRaw, trending, latest, companies, categories] = await Promise.all([
+    const [featuredRaw, trending, latest, companies, categories, settings] = await Promise.all([
       getFeaturedStories(5),
       getTrendingStories(3),
       getLatestStories(4),
       getAllCompanies(),
       getAllCategories(),
+      getSiteSettings(),
     ]);
 
     const spotlight = latest[0]
@@ -44,7 +56,7 @@ async function getHomeData() {
         }
       : null;
 
-    const featured = featuredRaw.map((s, i) => ({
+    const featured = featuredRaw.map((s) => ({
       id: s.id,
       title: s.title,
       slug: s.id,
@@ -74,7 +86,7 @@ async function getHomeData() {
       coverImage: s.coverImage,
     }));
 
-    return { spotlight, featured, trending, latest: latestMapped, companies, categoryItems };
+    return { spotlight, featured, trending, latest: latestMapped, companies, categoryItems, settings };
   } catch {
     return {
       spotlight: null,
@@ -83,6 +95,7 @@ async function getHomeData() {
       latest: [],
       companies: [],
       categoryItems: [],
+      settings: null,
     };
   }
 }
@@ -91,10 +104,18 @@ export default async function Home() {
   const data = await getHomeData();
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
+      {data.settings?.announcementEnabled && data.settings.announcementText && (
+        <div className="bg-blue-600/90 text-white text-center text-sm py-2 px-4">
+          {data.settings.announcementText}
+        </div>
+      )}
       <Navbar />
       <div className="pt-0">
-        <Hero spotlight={data.spotlight} />
+        <Hero
+          spotlight={data.spotlight}
+          subtitle={data.settings?.heroSubtitle}
+        />
         <LogoCloud companies={data.companies} />
         <Categories categories={data.categoryItems.length ? data.categoryItems : undefined} />
         <Trending stories={data.trending.length ? data.trending : undefined} />
@@ -102,8 +123,11 @@ export default async function Home() {
         <Featured posts={data.featured} />
         <Testimonials />
         <FAQ />
-        <Newsletter />
-        <Footer />
+        <Newsletter
+          title={data.settings?.newsletterTitle}
+          description={data.settings?.newsletterDescription}
+        />
+        <Footer settings={data.settings ?? undefined} />
       </div>
     </main>
   );

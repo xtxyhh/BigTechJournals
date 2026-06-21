@@ -19,15 +19,17 @@ export async function requireAuth() {
 
 export async function requireAdmin() {
   const user = await requireAuth();
-  if (user.role !== "ADMIN") throw new Error("Forbidden");
+  if (!["ADMIN", "SUPER_ADMIN", "EDITOR"].includes(user.role)) throw new Error("Forbidden");
   return user;
 }
 
 export async function syncUserFromClerk() {
   const clerkUser = await currentUser();
+
   if (!clerkUser) return null;
 
   const email = clerkUser.emailAddresses[0]?.emailAddress;
+
   if (!email) return null;
 
   const adminEmails = (process.env.ADMIN_EMAIL ?? "")
@@ -35,21 +37,52 @@ export async function syncUserFromClerk() {
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
 
-  const role: Role = adminEmails.includes(email.toLowerCase()) ? "ADMIN" : "USER";
+  const role: Role =
+    adminEmails.includes(email.toLowerCase())
+      ? "ADMIN"
+      : "USER";
 
-  return db.user.upsert({
-    where: { clerkId: clerkUser.id },
-    create: {
+  const existingUser = await db.user.findFirst({
+    where: {
+      OR: [
+        { clerkId: clerkUser.id },
+        { email: email },
+      ],
+    },
+  });
+
+  if (existingUser) {
+    return db.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        clerkId: clerkUser.id,
+        email,
+        name:
+          clerkUser.fullName ??
+          clerkUser.firstName ??
+          null,
+        image:
+          clerkUser.imageUrl ??
+          null,
+        role,
+      },
+    });
+  }
+
+  return db.user.create({
+    data: {
       clerkId: clerkUser.id,
       email,
-      name: clerkUser.fullName ?? clerkUser.firstName ?? null,
-      image: clerkUser.imageUrl ?? null,
+      name:
+        clerkUser.fullName ??
+        clerkUser.firstName ??
+        null,
+      image:
+        clerkUser.imageUrl ??
+        null,
       role,
-    },
-    update: {
-      email,
-      name: clerkUser.fullName ?? clerkUser.firstName ?? null,
-      image: clerkUser.imageUrl ?? null,
     },
   });
 }

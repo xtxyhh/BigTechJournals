@@ -18,7 +18,7 @@ export default function Spotlight() {
                         <div className="relative pl-8 mb-8 border-l-4 border-brand-blue/30">
                             <Quote className="absolute -top-1 left-8 text-brand-blue/10 w-12 h-12 -z-10 transform -scale-x-100" />
                             <p className="text-xl text-slate-600 italic leading-relaxed">
-                                "The biggest mistake I made was thinking I needed a CS degree to compete. The reality was I just needed to stop learning languages and start building systems."
+                                &ldquo;The biggest mistake I made was thinking I needed a CS degree to compete. The reality was I just needed to stop learning languages and start building systems.&rdquo;
                             </p>
                         </div>
 

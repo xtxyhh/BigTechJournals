@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, BookOpen, GraduationCap, Briefcase } from "lucide-react";
+import { Users, BookOpen, Briefcase } from "lucide-react";
 
 interface CategoryHeaderProps {
   title: string;

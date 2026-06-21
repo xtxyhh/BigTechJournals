@@ -2,6 +2,7 @@ import { db } from "./db";
 import type { Prisma } from "@prisma/client";
 import { formatReadTime, formatViews } from "./seo";
 import type { StoryCardProps } from "@/components/stories/StoryCard";
+import { searchPlatformContent } from "./platform-content";
 
 export type StorySort = "latest" | "most-viewed" | "trending";
 
@@ -47,7 +48,7 @@ export function toStoryCard(
 }
 
 function buildWhere(filters: StoryFilters): Prisma.StoryWhereInput {
-  const where: Prisma.StoryWhereInput = { published: true };
+  const where: Prisma.StoryWhereInput = { published: true, deletedAt: null };
 
   if (filters.featured) where.featured = true;
   if (filters.companySlug) where.company = { slug: filters.companySlug };
@@ -164,6 +165,33 @@ export async function getRecommendedStories(
   });
 }
 
+export async function getAdjacentStories(story: { id: string; createdAt: Date }) {
+  const [previous, next] = await Promise.all([
+    db.story.findFirst({
+      where: {
+        published: true,
+        deletedAt: null,
+        id: { not: story.id },
+        createdAt: { lt: story.createdAt },
+      },
+      include: storyInclude,
+      orderBy: { createdAt: "desc" },
+    }),
+    db.story.findFirst({
+      where: {
+        published: true,
+        deletedAt: null,
+        id: { not: story.id },
+        createdAt: { gt: story.createdAt },
+      },
+      include: storyInclude,
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+
+  return { previous, next };
+}
+
 export async function incrementStoryViews(storyId: string) {
   await db.$transaction([
     db.story.update({ where: { id: storyId }, data: { views: { increment: 1 } } }),
@@ -172,9 +200,9 @@ export async function incrementStoryViews(storyId: string) {
 }
 
 export async function globalSearch(query: string, limit = 8) {
-  if (!query.trim()) return { stories: [], companies: [], categories: [] };
+  if (!query.trim()) return { stories: [], companies: [], categories: [], resources: [], internships: [], roadmaps: [], users: [] };
 
-  const [stories, companies, categories] = await Promise.all([
+  const [stories, companies, categories, platform, users] = await Promise.all([
     db.story.findMany({
       where: {
         published: true,
@@ -196,7 +224,18 @@ export async function globalSearch(query: string, limit = 8) {
       select: { id: true, name: true, slug: true },
       take: 5,
     }),
+    searchPlatformContent(query, 5),
+    db.user.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { email: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true, name: true, image: true },
+      take: 5,
+    }),
   ]);
 
-  return { stories, companies, categories };
+  return { stories, companies, categories, ...platform, users };
 }

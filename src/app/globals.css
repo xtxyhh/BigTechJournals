@@ -7,30 +7,43 @@
   --color-aurora-start: #e0f2fe;
   --color-aurora-mid: #dbeafe;
   --color-aurora-end: #f0f9ff;
+
+  --color-surface: #09090b;
+  --color-surface-card: #111111;
+  --color-surface-elevated: #171717;
+  --color-surface-border: rgba(255, 255, 255, 0.08);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-surface-muted: rgba(255, 255, 255, 0.65);
+
+  --color-bg: #09090b;
+  --color-card: #111111;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #ffffff;
+  --color-muted: rgba(255, 255, 255, 0.65);
+
   --font-sans: var(--font-inter);
   --font-heading: var(--font-outfit);
-  --color-bg: #020617;
-
---color-card: #0f172a;
-
---color-border: #1e293b;
-
---color-text: #f8fafc;
-
---color-muted: #94a3b8;
 
   --animate-aurora: aurora 60s linear infinite;
+  --animate-fade-up: fade-up 0.4s ease-out forwards;
 
   @keyframes aurora {
     from {
-      background-position:
-        50% 50%,
-        50% 50%;
+      background-position: 50% 50%, 50% 50%;
     }
     to {
-      background-position:
-        350% 50%,
-        350% 50%;
+      background-position: 350% 50%, 350% 50%;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
@@ -46,13 +59,16 @@
 
 @layer base {
   html {
-  color-scheme: dark;
-}
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
 
-body {
-  @apply font-sans bg-slate-950 text-slate-100;
-  min-height: 100vh;
-}
+  body {
+    @apply font-sans bg-surface text-white antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   h1,
   h2,
   h3,
@@ -61,29 +77,45 @@ body {
   h6 {
     @apply font-heading font-semibold tracking-tight;
   }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-blue-500/40 ring-offset-2 ring-offset-surface;
+  }
 }
 
 @layer utilities {
   .bg-aurora {
-  background:
-    radial-gradient(circle at top left,
-      rgba(59,130,246,.18),
-      transparent 40%),
+    background:
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 40%),
+      radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 40%),
+      #09090b;
+  }
 
-    radial-gradient(circle at bottom right,
-      rgba(14,165,233,.12),
-      transparent 40%),
+  .bg-aurora-fade {
+    background: linear-gradient(180deg, #09090b 0%, #111111 50%, #09090b 100%);
+  }
 
-    #020617;
-}
+  .border-surface {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
 
-.bg-aurora-fade {
-  background:
-    linear-gradient(
-      180deg,
-      #020617 0%,
-      #0f172a 50%,
-      #020617 100%
-    );
-}
+  .shadow-card {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-card-hover {
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.35),
+      0 12px 32px rgba(59, 130, 246, 0.08);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.4s ease-out forwards;
+  }
 }

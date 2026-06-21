@@ -439,6 +439,12 @@ async function main() {
   }
 
   console.log("Seed completed!");
+
+  await prisma.siteSettings.upsert({
+    where: { id: "site" },
+    create: { id: "site" },
+    update: {},
+  });
 }
 
 main()
