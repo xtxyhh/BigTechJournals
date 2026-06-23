@@ -51,6 +51,7 @@ type StoryData = {
   linkedin?: string | null;
   twitter?: string | null;
   instagram?: string | null;
+  currentCompany?: string | null;
   company?: { name: string; slug: string; logo?: string | null; description?: string | null } | null;
   categories: { category: { id: string; name: string; slug: string } }[];
   comments?: StoryComment[];
@@ -212,6 +213,13 @@ function richTextValue(value: unknown): string {
 
 function hasReadableText(value: string): boolean {
   return value.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").trim().length > 0;
+}
+
+function companyBadges(story: StoryData) {
+  const names = new Set<string>();
+  if (story.company?.name) names.add(story.company.name);
+  story.currentCompany?.split(",").map((item) => item.trim()).filter(Boolean).forEach((item) => names.add(item));
+  return Array.from(names);
 }
 
 function renderMarks(text: ReactNode, marks?: TipTapMark[]) {
@@ -377,6 +385,7 @@ export default function StoryExperienceClient({
   const [shareUrl, setShareUrl] = useState("");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const rendered = useMemo(() => detectContent(story.content), [story.content]);
+  const companies = useMemo(() => companyBadges(story), [story]);
   const { liked, toggle: toggleLike } = useLike(story.id);
   const { bookmarked, toggle: toggleBookmark } = useBookmark(story.id);
   const richSections = useMemo(
@@ -461,11 +470,17 @@ export default function StoryExperienceClient({
                 {category.name}
               </Link>
             ))}
-            {story.company && (
-              <Link href={`/company/${story.company.slug}`} className="rounded-full border border-white/[0.08] bg-white/[0.05] px-3 py-1 text-xs font-semibold text-white/65">
-                {story.company.name}
-              </Link>
-            )}
+            {companies.map((companyName) => (
+              story.company?.name === companyName ? (
+                <Link key={companyName} href={`/company/${story.company.slug}`} className="rounded-full border border-white/[0.08] bg-white/[0.05] px-3 py-1 text-xs font-semibold text-white/65">
+                  {companyName}
+                </Link>
+              ) : (
+                <span key={companyName} className="rounded-full border border-white/[0.08] bg-white/[0.05] px-3 py-1 text-xs font-semibold text-white/65">
+                  {companyName}
+                </span>
+              )
+            ))}
           </div>
 
           <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">

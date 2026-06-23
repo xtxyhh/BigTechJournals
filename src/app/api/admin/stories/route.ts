@@ -61,7 +61,10 @@ function buildStoryData(body: Record<string, unknown>) {
   if ("seoKeywords" in data) data.seoKeywords = cleanOptionalString(data.seoKeywords);
   if ("canonicalUrl" in data) data.canonicalUrl = cleanOptionalString(data.canonicalUrl);
 
-  data.companyId = cleanOptionalString(body.companyId);
+  const companyIds = Array.isArray(body.companyIds)
+    ? body.companyIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim()))
+    : [];
+  data.companyId = cleanOptionalString(companyIds[0] ?? body.companyId);
 
   if ("timeline" in body) data.timeline = body.timeline || null;
   if ("interviewProcess" in body) data.interviewProcess = body.interviewProcess || null;
@@ -83,12 +86,27 @@ function buildStoryData(body: Record<string, unknown>) {
   return data;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAdmin();
+    const id = request.nextUrl.searchParams.get("id");
+    if (id) {
+      const story = await db.story.findUnique({
+        where: { id },
+        include: {
+          company: true,
+          companies: { include: { company: true } },
+          categories: { include: { category: true } },
+          _count: { select: { likes: true, comments: true } },
+        },
+      });
+      if (!story) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json(story);
+    }
     const stories = await db.story.findMany({
       include: {
         company: true,
+        companies: { include: { company: true } },
         categories: { include: { category: true } },
         _count: { select: { likes: true, comments: true } },
       },
@@ -106,6 +124,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as Record<string, unknown>;
     
     const categoryIds = Array.isArray(body.categoryIds) ? body.categoryIds.filter((id): id is string => typeof id === "string") : [];
+    const companyIds = Array.isArray(body.companyIds) ? body.companyIds.filter((id): id is string => typeof id === "string") : [];
 
     const story = await db.story.create({
       data: buildStoryData(body) as Prisma.StoryUncheckedCreateInput,
@@ -114,6 +133,12 @@ export async function POST(request: NextRequest) {
     if (categoryIds.length) {
       await db.storyCategory.createMany({
         data: categoryIds.map((categoryId) => ({ storyId: story.id, categoryId })),
+      });
+    }
+    if (companyIds.length) {
+      await db.storyCompany.createMany({
+        data: companyIds.map((companyId) => ({ storyId: story.id, companyId })),
+        skipDuplicates: true,
       });
     }
 
@@ -132,6 +157,7 @@ export async function PATCH(request: NextRequest) {
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
     const categoryIds = Array.isArray(body.categoryIds) ? body.categoryIds.filter((categoryId): categoryId is string => typeof categoryId === "string") : undefined;
+    const companyIds = Array.isArray(body.companyIds) ? body.companyIds.filter((companyId): companyId is string => typeof companyId === "string") : undefined;
     const updateData = buildStoryData(body) as Prisma.StoryUncheckedUpdateInput;
 
     const story = await db.story.update({ where: { id }, data: updateData });
@@ -141,6 +167,15 @@ export async function PATCH(request: NextRequest) {
       if (categoryIds.length) {
         await db.storyCategory.createMany({
           data: categoryIds.map((categoryId) => ({ storyId: id, categoryId })),
+        });
+      }
+    }
+    if (companyIds !== undefined) {
+      await db.storyCompany.deleteMany({ where: { storyId: id } });
+      if (companyIds.length) {
+        await db.storyCompany.createMany({
+          data: companyIds.map((companyId) => ({ storyId: id, companyId })),
+          skipDuplicates: true,
         });
       }
     }

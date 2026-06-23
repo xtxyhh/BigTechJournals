@@ -25,7 +25,7 @@ export default function LogoCloud({ companies }: LogoCloudProps) {
     : FALLBACK_LOGOS;
 
   return (
-    <section className="py-10 pt-20 border-b border-surface-border bg-surface/50 backdrop-blur-sm">
+    <section className="border-b border-surface-border bg-surface/50 py-8 backdrop-blur-sm sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-center text-sm font-semibold text-surface-muted uppercase tracking-widest mb-8">
           Trusted by engineers from

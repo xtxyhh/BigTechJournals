@@ -37,7 +37,11 @@ export default async function StoryPage({ params }: PageProps) {
 
   const jsonLd = buildArticleJsonLd(story);
   const [recommendedStories, adjacentStories] = await Promise.all([
-    getRecommendedStories(story.id, story.companyId, 4),
+    getRecommendedStories(
+  story.id,
+  story.companyId ? [story.companyId] : [],
+  4
+),
     getAdjacentStories(story),
   ]);
 
@@ -56,6 +60,7 @@ export default async function StoryPage({ params }: PageProps) {
     linkedin: story.linkedin,
     twitter: story.twitter,
     instagram: story.instagram,
+    currentCompany: story.currentCompany,
     company: story.company
       ? {
           name: story.company.name,

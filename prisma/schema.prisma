@@ -45,6 +45,7 @@ model Company {
   salaryRange      String?
   tags             String[]
   stories          Story[]
+  storyLinks       StoryCompany[]
   companyInterviews CompanyInterview[]
   bookmarks         Bookmark[]
   careerSwitches    CareerSwitch[]
@@ -53,6 +54,7 @@ model Company {
   resourceItems    Resource[]
   roadmaps         Roadmap[]
   submissions      StorySubmission[]
+  submissionLinks  StorySubmissionCompany[]
 
   @@index([slug])
 }
@@ -122,6 +124,7 @@ model Story {
   likes            Like[]
   company          Company?        @relation(fields: [companyId], references: [id])
   categories       StoryCategory[]
+  companies        StoryCompany[]
 
   @@index([slug])
   @@index([published, featured])
@@ -142,6 +145,16 @@ model StoryCategory {
   @@id([storyId, categoryId])
 }
 
+model StoryCompany {
+  storyId   String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  story     Story   @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@id([storyId, companyId])
+  @@index([companyId])
+}
+
 model StorySubmission {
   id           String           @id @default(cuid())
   name         String
@@ -159,9 +172,20 @@ model StorySubmission {
   reviewNotes  String?
   category     Category?        @relation(fields: [categoryId], references: [id])
   company      Company?         @relation(fields: [companyId], references: [id])
+  companies    StorySubmissionCompany[]
 
   @@index([status])
   @@index([email])
+}
+
+model StorySubmissionCompany {
+  submissionId String
+  companyId    String
+  company      Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  submission   StorySubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@id([submissionId, companyId])
+  @@index([companyId])
 }
 
 model Comment {

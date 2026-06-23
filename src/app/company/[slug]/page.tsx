@@ -65,7 +65,7 @@ export default async function CompanyPage({ params }: PageProps) {
                 How to Crack {company.name}
               </h1>
               <p className="text-lg text-white/68 max-w-3xl leading-relaxed">{company.description}</p>
-              <p className="mt-4 text-sm text-white/45">{company._count.stories} stories from {company.name} engineers</p>
+              <p className="mt-4 text-sm text-white/45">{company._count.storyLinks} stories from {company.name} engineers</p>
             </div>
           </div>
         </div>

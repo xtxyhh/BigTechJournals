@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import { ContainerScroll } from "./ui/container-scroll-animation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BookOpen, ChevronDown, PlayCircle } from "lucide-react";
+import { ArrowRight, BookOpen, PlayCircle } from "lucide-react";
 import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 
 interface HeroProps {
@@ -22,83 +21,60 @@ export default function Hero({ spotlight, subtitle }: HeroProps) {
   const spotlightImage = safeImageUrl(spotlight?.coverImage, DEFAULT_IMAGES.storyCover);
 
   return (
-    <div className="flex flex-col overflow-hidden bg-surface bg-aurora relative">
-      <h1 className="sr-only">Big Tech Journals — Real Journeys, Real Guidance, Your Roadmap to Big Tech</h1>
-      <ContainerScroll
-        titleComponent={
-          <>
-            <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 px-2">
-              <div className="bg-surface-elevated no-underline group relative shadow-2xl shadow-blue-500/20 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block mb-4 transition-transform hover:scale-[1.02] duration-200">
-                <span className="absolute inset-0 overflow-hidden rounded-full">
-                  <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </span>
-                <div className="relative flex space-x-2 items-center z-10 rounded-full bg-surface-elevated py-0.5 px-4 ring-1 ring-white/10 group-hover:ring-white/20 transition-all duration-200">
-                  <span className="text-blue-200">✨ New Story Out Now</span>
-                  <svg fill="none" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M10.75 8.75L14.25 12L10.75 15.25" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-                  </svg>
-                </div>
-              </div>
-              <h1 className="max-w-5xl text-center text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
-                Real Journeys. Real Guidance. 
-                Your Roadmap to Big Tech
-              </h1>
-            </div>
-
-            <p className="text-base sm:text-lg md:text-xl text-surface-muted mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed tracking-tight px-4">
-              {subtitle ?? (
-                <>
-                  Real stories, internships, resources and roadmaps from engineers at Google, Microsoft, Amazon, Adobe and more.
-                  <br />
-                  <span className="font-bold text-white">Everything you need to move with conviction.</span>
-                </>
-              )}
-            </p>
-            <div className="mb-8 flex flex-wrap items-center justify-center gap-3 px-4">
-              <Link href="/stories" className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-400">
-                Start Reading <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/trending" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-5 py-3 text-sm font-semibold text-white/75 backdrop-blur-xl transition hover:text-white">
-                Explore Stories <BookOpen className="h-4 w-4" />
-              </Link>
-              <Link href="/stories?search=journey" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-5 py-3 text-sm font-semibold text-white/75 backdrop-blur-xl transition hover:text-white">
-                Watch Journeys <PlayCircle className="h-4 w-4" />
-              </Link>
-            </div>
-          </>
-        }
-      >
-        <Image
-          src={spotlightImage}
-          alt={spotlightTitle}
-          height={720}
-          width={1400}
-          priority
-          sizes="(max-width: 768px) 100vw, 1400px"
-          className="mx-auto rounded-2xl object-cover h-full object-left-top draggable-false shadow-2xl"
-          draggable={false}
-        />
+    <section className="relative overflow-hidden bg-surface bg-aurora px-4 pb-7 pt-16 text-white sm:px-6 sm:pb-9 sm:pt-20 lg:pt-22">
+      <h1 className="sr-only">BigTechJournals - Your Roadmap to Big Tech.</h1>
+      <div className="mx-auto grid max-w-7xl content-start items-center gap-5 sm:gap-6">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="animate-fade-up inline-flex rounded-full border border-white/[0.1] bg-white/[0.06] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-200 backdrop-blur-xl sm:px-4 sm:py-2 sm:text-xs">
+            Weekly stories from real engineers
+          </div>
+          <div className="mt-4 overflow-hidden sm:mt-5">
+            <p className="hero-line hero-line-3">Your Roadmap to Big-Tech!</p>
+          </div>
+          <p className="mx-auto mt-4 max-w-2xl animate-fade-up px-1 text-sm leading-6 text-white/68 [animation-delay:520ms] sm:text-base md:text-lg">
+            {subtitle ?? "Real stories, internships, resources and roadmaps from engineers at Google, Microsoft, Amazon, Adobe and more. Everything you need to move with conviction."}
+          </p>
+          <div className="mt-5 flex animate-fade-up flex-col items-stretch justify-center gap-3 [animation-delay:680ms] sm:flex-row sm:items-center">
+            <Link href="/stories" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#050816] shadow-lg shadow-blue-500/15 transition hover:bg-blue-100">
+              Start Reading <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link href="/trending" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/78 backdrop-blur-xl transition hover:border-blue-300/35 hover:text-white">
+              Explore Stories <BookOpen className="h-4 w-4" />
+            </Link>
+            <Link href="/stories?search=journey" className="hidden min-h-12 items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/78 backdrop-blur-xl transition hover:border-blue-300/35 hover:text-white sm:inline-flex">
+              Watch Journeys <PlayCircle className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
 
         <Link
           href={spotlight ? `/stories/${spotlight.slug}` : "/stories"}
-          className="absolute bottom-0 left-0 w-full p-6 sm:p-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent text-left block"
+          className="group relative mx-auto block w-full max-w-4xl overflow-hidden rounded-[20px] border border-white/[0.1] bg-white/[0.06] p-1.5 shadow-2xl shadow-black/40 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-300/35 sm:rounded-[24px] sm:p-2"
         >
-          <span className="px-3 py-1 bg-blue-600 rounded-full text-white text-xs font-bold uppercase tracking-wider mb-2 inline-block">
-            Weekly Spotlight
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-2 leading-tight">
-            {spotlightTitle}
-          </h2>
-          <p className="text-white/80 text-sm sm:text-lg">
-            {spotlight ? `${spotlight.author} • ${spotlight.role}` : "Yagna Kusumanchi • SDE Intern"}
-          </p>
+          <div className="relative aspect-[16/6.5] min-h-[145px] overflow-hidden rounded-[16px] sm:min-h-[210px] sm:rounded-[18px] lg:min-h-[245px]">
+            <Image
+              src={spotlightImage}
+              alt={spotlightTitle}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 1024px"
+              className="object-cover object-center transition duration-700 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/34 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-4 text-left sm:p-6">
+              <span className="mb-2 inline-flex rounded-full bg-blue-500 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white sm:text-xs">
+                Weekly Spotlight
+              </span>
+              <h2 className="max-w-3xl text-lg font-semibold leading-tight text-white sm:text-2xl md:text-3xl">
+                {spotlightTitle}
+              </h2>
+              <p className="mt-1 text-xs text-white/76 sm:text-sm">
+                {spotlight ? `${spotlight.author} - ${spotlight.role}` : "Yagna Kusumanchi - SDE Intern"}
+              </p>
+            </div>
+          </div>
         </Link>
-      </ContainerScroll>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-surface-muted hidden md:flex flex-col items-center gap-2 pointer-events-none">
-        <span className="text-xs uppercase tracking-widest font-medium">Scroll</span>
-        <ChevronDown className="w-5 h-5" />
       </div>
-    </div>
+    </section>
   );
 }

@@ -142,7 +142,7 @@ export default function AdminStoriesPage() {
                       <button onClick={() => patchStory(story.id, { published: true })} className="rounded-xl p-2 text-white/55 hover:bg-white/[0.06] hover:text-emerald-200"><Upload className="h-4 w-4" /></button>
                       <button onClick={() => duplicateStory(story)} className="rounded-xl p-2 text-white/55 hover:bg-white/[0.06] hover:text-white"><Copy className="h-4 w-4" /></button>
                       <button onClick={() => patchStory(story.id, { featured: !story.featured })} className="rounded-xl p-2 text-white/55 hover:bg-white/[0.06] hover:text-amber-200"><Star className={`h-4 w-4 ${story.featured ? "fill-amber-300 text-amber-300" : ""}`} /></button>
-                      <button className="rounded-xl p-2 text-white/55 hover:bg-white/[0.06] hover:text-white"><Pencil className="h-4 w-4" /></button>
+                      <Link href={`/admin/stories/${story.id}`} className="rounded-xl p-2 text-white/55 hover:bg-white/[0.06] hover:text-white"><Pencil className="h-4 w-4" /></Link>
                       <button onClick={() => deleteStory(story.id)} className="rounded-xl p-2 text-white/55 hover:bg-red-500/10 hover:text-red-200"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
@@ -165,7 +165,7 @@ export default function AdminStoriesPage() {
                 <div className="rounded-2xl bg-black/20 p-3 text-xs text-white/45">OG preview: /stories/{story.slug}</div>
                 <div className="flex items-center justify-between text-sm text-white/50">
                   <span>SEO {seoScore(story)}%</span>
-                  <button onClick={() => patchStory(story.id, { published: true })} className="rounded-xl bg-blue-500 px-3 py-2 text-white">Publish</button>
+                  <Link href={`/admin/stories/${story.id}`} className="rounded-xl bg-white/[0.06] px-3 py-2 text-white/75">Edit</Link>
                 </div>
               </div>
             </article>

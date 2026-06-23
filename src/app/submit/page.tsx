@@ -95,6 +95,33 @@ export default function SubmitPage() {
               <input name="linkedin" type="url" placeholder="https://linkedin.com/in/..." className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
             </div>
 
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">Phone Number</label>
+                <input name="phone" type="tel" className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">Experience</label>
+                <input name="experience" placeholder="0-2 years, Intern, SDE-1..." className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">Current Company</label>
+                <input name="currentCompany" className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">Current Role</label>
+                <input name="currentRole" className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">College</label>
+                <input name="college" className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-surface-muted mb-1">Graduation Year</label>
+                <input name="graduationYear" inputMode="numeric" placeholder="2026" className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-surface-muted mb-1">Story Title *</label>
               <input name="storyTitle" required className="w-full px-4 py-2.5 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white" />
@@ -123,8 +150,28 @@ export default function SubmitPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-surface-muted mb-1">Story Content * (Markdown supported)</label>
+              <label className="block text-sm font-medium text-surface-muted mb-1">Story * (Markdown supported)</label>
               <textarea name="storyContent" required rows={12} placeholder="Tell your story... What happened? What did you learn? What would you do differently?" className="w-full px-4 py-3 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white resize-y" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-surface-muted mb-1">Interview Process</label>
+              <textarea name="interviewProcess" rows={6} placeholder="Rounds, questions, timelines, interview format..." className="w-full px-4 py-3 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white resize-y" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-surface-muted mb-1">Resources Used</label>
+              <textarea name="resourcesUsed" rows={5} placeholder="Courses, sheets, books, videos, mocks, communities..." className="w-full px-4 py-3 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white resize-y" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-surface-muted mb-1">Tips</label>
+              <textarea name="tips" rows={5} placeholder="Practical advice and mistakes to avoid..." className="w-full px-4 py-3 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white resize-y" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-surface-muted mb-1">Timeline</label>
+              <textarea name="timeline" rows={5} placeholder="Preparation timeline, application dates, rounds, offer..." className="w-full px-4 py-3 border border-surface-border bg-surface-elevated rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 text-white resize-y" />
             </div>
 
             <div>

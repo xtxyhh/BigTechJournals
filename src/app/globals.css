@@ -171,6 +171,65 @@
     animation: fade-up 0.4s ease-out forwards;
   }
 
+  .hero-line {
+    display: block;
+    color: #fff;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    text-wrap: balance;
+    opacity: 0;
+    transform: translateY(22px);
+    animation: hero-reveal 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @media (min-width: 640px) {
+    .hero-line {
+      font-size: 3.2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-line {
+      font-size: 4.35rem;
+    }
+  }
+
+  .hero-line-1 {
+    animation-delay: 80ms;
+  }
+
+  .hero-line-2 {
+    animation-delay: 220ms;
+  }
+
+  .hero-line-3 {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    animation:
+      hero-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) 360ms forwards,
+      hero-type 1.15s steps(25, end) 520ms both;
+  }
+
+  @keyframes hero-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes hero-type {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
   .no-scrollbar {
     scrollbar-width: none;
   }

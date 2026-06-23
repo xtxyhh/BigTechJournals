@@ -3,7 +3,7 @@ import { db } from "./db";
 export async function getAllCompanies() {
   return db.company.findMany({
     orderBy: { name: "asc" },
-    include: { _count: { select: { stories: { where: { published: true } } } } },
+    include: { _count: { select: { storyLinks: { where: { story: { published: true } } } } } },
   });
 }
 
@@ -20,7 +20,22 @@ export async function getCompanyBySlug(slug: string) {
         orderBy: { views: "desc" },
         take: 6,
       },
-      _count: { select: { stories: { where: { published: true } } } },
+      storyLinks: {
+        where: { story: { published: true } },
+        include: {
+          story: {
+            include: {
+              company: true,
+              companies: { include: { company: true } },
+              categories: { include: { category: true } },
+              _count: { select: { likes: true, comments: true } },
+            },
+          },
+        },
+        orderBy: { story: { views: "desc" } },
+        take: 6,
+      },
+      _count: { select: { storyLinks: { where: { story: { published: true } } } } },
     },
   });
 }
@@ -49,6 +64,7 @@ export async function getCategoryStories(slug: string, sort: "latest" | "most-vi
     },
     include: {
       company: true,
+      companies: { include: { company: true } },
       categories: { include: { category: true } },
       _count: { select: { likes: true, comments: true } },
     },

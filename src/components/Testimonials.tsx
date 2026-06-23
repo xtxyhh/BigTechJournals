@@ -3,58 +3,90 @@ import React from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
 import Link from "next/link";
-import { DEFAULT_IMAGES } from "@/lib/images";
 
 const TESTIMONIALS = [
   {
     id: 1,
     quote:
-      "The lovely team at DesignMe has provided our startup with significant leverage. Their work is exceptionally professional, and Adrian is always attentive to our needs.",
-    name: "Patrick Nawrocki",
-    role: "UX Manager at Superhabits",
-    avatar: DEFAULT_IMAGES.avatar,
-    storyImage: DEFAULT_IMAGES.storyCover,
-    link: "/stories/patrick-nawrocki",
+      "BigTechJournals Team writes good content and is also very laborious.",
+
+    name: "Ali Haider",
+
+    role: "Quant @ Graviton | Ex-Intern Goldman Sachs",
+
+    avatar: "/images/stories/ali-haider.png",
+
+    storyImage: "/images/stories/ali-haider.png",
+
+    link: "/stories/ali-haider",
   },
+
   {
     id: 2,
+
     quote:
-      "DesignMe has greatly exceeded our expectations. The communication is always excellent, the turnaround is extremely quick, and the designs are fresh, innovative, and spot on!",
-    name: "Rob West",
-    role: "CEO of Kingdom Advisors",
-    avatar: DEFAULT_IMAGES.avatar,
-    storyImage: DEFAULT_IMAGES.categoryInternships,
-    link: "/stories/rob-west",
+      "From resources, roadmap, mistakes to avoid, to my full interview experience - it's all documented. Truly grateful to BigTechJournals for capturing my journey and sharing it with aspiring techies out there! Hope this helps someone who's still figuring things out.",
+
+    name: "Sanya Dureja",
+
+    role: "Software Engineer @ PayPal",
+
+    avatar: "/images/stories/sanya-dureja.png",
+
+    storyImage: "/images/stories/sanya-dureja.png",
+
+    link: "/stories/sanya-dureja",
   },
+
   {
     id: 3,
+
     quote:
-      "The level of thought they put into each design is amazing. They really understood our brand voice. I'd recommend them to anyone looking for top-tier design work.",
-    name: "Sarah Jenkins",
-    role: "Product Lead at Spotify",
-    avatar: DEFAULT_IMAGES.avatar,
-    storyImage: DEFAULT_IMAGES.categoryCareer,
-    link: "/stories/sarah-jenkins",
+      "Great initiative to help students who wonder about whom to reach out for guidance. Their 7-minute read journals can clear many common doubts of students.",
+
+    name: "Yash Chauhan",
+
+    role: "Software Engineer @ JP Morgan",
+
+    avatar: "/images/stories/yash-chauhan.png",
+
+    storyImage: "/images/stories/yash-chauhan.png",
+
+    link: "/stories/yash-chauhan",
   },
+
   {
     id: 4,
+
     quote:
-      "Their approach to problem-solving is unique. They don't just design; they think about the user experience deeply. It's been a game-changer for our dashboard.",
-    name: "David Chen",
-    role: "Senior Engineer at Google",
-    avatar: DEFAULT_IMAGES.avatar,
-    storyImage: DEFAULT_IMAGES.categoryTech,
-    link: "/stories/david-chen",
+      "BigTechJournals reached out to feature my journey of cracking Google, which ended up being the very first story on the platform. What I appreciate most is that the team has been showing up regularly and trying to build something meaningful for the tech community.",
+
+    name: "Parishi Thada",
+
+    role: "SDE Intern @ Blinkit | Ex-Intern @ Google",
+
+    avatar: "/images/stories/parishi-thada.png",
+
+    storyImage: "/images/stories/parishi-thada.png",
+
+    link: "/stories/parishi-thada",
   },
+
   {
     id: 5,
+
     quote:
-      "I was skeptical about outsourcing design, but this team proved me wrong. They integrated seamlessly with our devs and delivered assets that were developer-ready.",
-    name: "Emily Davis",
-    role: "CTO at TechFlow",
-    avatar: DEFAULT_IMAGES.avatar,
-    storyImage: DEFAULT_IMAGES.storyCover,
-    link: "/stories/emily-davis",
+      "I had a great experience sharing my story with BigTechJournals. They are really doing a great job in bringing up and articulating such inspiring stories which are helpful to a lot of aspiring engineers.",
+
+    name: "Ayush Kumar Singh",
+
+    role: "SDE-2 @ YAL | Ex-SDE @ Amazon",
+
+    avatar: "/images/stories/ayush-kumar-singh.png",
+
+    storyImage: "/images/stories/ayush-kumar-singh.png",
+
+    link: "/stories/ayush-kumar-singh",
   },
 ];
 
@@ -75,7 +107,7 @@ export default function Testimonials() {
 
       <div className="relative w-full overflow-x-hidden">
         <div
-          className="flex gap-6 w-max animate-scroll hover:[animation-play-state:paused] ml-4"
+          className="flex w-max gap-5 px-4 animate-scroll hover:[animation-play-state:paused]"
           style={
             {
               "--animation-duration": "60s",
@@ -102,7 +134,7 @@ function TestimonialCard({ item }: { item: (typeof TESTIMONIALS)[0] }) {
   return (
     <Link
       href={item.link}
-      className="block group relative w-[min(350px,calc(100vw-2rem))] md:w-[400px] h-[450px] shrink-0 bg-surface-card rounded-4xl p-8 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-card-hover overflow-hidden cursor-pointer border border-surface-border"
+      className="group relative flex h-[460px] w-[min(350px,calc(100vw-2rem))] shrink-0 flex-col overflow-hidden rounded-[24px] border border-surface-border bg-surface-card p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/35 hover:shadow-card-hover md:w-[400px]"
     >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
         <Image
@@ -110,7 +142,7 @@ function TestimonialCard({ item }: { item: (typeof TESTIMONIALS)[0] }) {
           alt={item.name}
           fill
           sizes="400px"
-          className="object-cover"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center pl-1 transition-transform duration-200 group-hover:scale-110">
@@ -123,8 +155,8 @@ function TestimonialCard({ item }: { item: (typeof TESTIMONIALS)[0] }) {
         </div>
       </div>
 
-      <div className="relative z-0 h-full flex flex-col justify-between group-hover:opacity-0 transition-opacity duration-300">
-        <div className="flex-1">
+      <div className="relative z-0 flex h-full flex-col justify-between gap-6 group-hover:opacity-0 transition-opacity duration-300">
+        <div className="min-h-0 flex-1">
           <div className="mb-6 relative w-12 h-12 rounded-full overflow-hidden border-2 border-surface-border">
             <Image
               src={item.avatar}
@@ -135,16 +167,16 @@ function TestimonialCard({ item }: { item: (typeof TESTIMONIALS)[0] }) {
             />
           </div>
 
-          <blockquote className="text-lg text-white leading-relaxed font-medium">
+          <blockquote className="line-clamp-[9] text-base font-medium leading-7 text-white sm:text-lg">
             &ldquo;{item.quote}&rdquo;
           </blockquote>
         </div>
 
-        <div className="mt-8">
-          <div className="font-script text-2xl text-surface-muted mb-1">
+        <div>
+          <div className="mb-1 text-2xl font-semibold text-white/78">
             {item.name}
           </div>
-          <div className="text-sm text-surface-muted font-medium">{item.role}</div>
+          <div className="line-clamp-2 text-sm font-medium leading-5 text-surface-muted">{item.role}</div>
         </div>
       </div>
     </Link>

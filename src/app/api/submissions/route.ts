@@ -35,8 +35,18 @@ export async function POST(request: NextRequest) {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       linkedin: (formData.get("linkedin") as string) || "",
+      phone: (formData.get("phone") as string) || "",
+      currentCompany: (formData.get("currentCompany") as string) || "",
+      currentRole: (formData.get("currentRole") as string) || "",
+      college: (formData.get("college") as string) || "",
+      graduationYear: (formData.get("graduationYear") as string) || "",
+      experience: (formData.get("experience") as string) || "",
       storyTitle: formData.get("storyTitle") as string,
       storyContent: formData.get("storyContent") as string,
+      interviewProcess: (formData.get("interviewProcess") as string) || "",
+      resourcesUsed: (formData.get("resourcesUsed") as string) || "",
+      tips: (formData.get("tips") as string) || "",
+      timeline: (formData.get("timeline") as string) || "",
       notes: (formData.get("notes") as string) || "",
       categoryId: (formData.get("categoryId") as string) || undefined,
       companyId: (formData.get("companyId") as string) || undefined,
@@ -61,6 +71,23 @@ export async function POST(request: NextRequest) {
       resumeUrl = await uploadFile("resumes", `${Date.now()}-${crypto.randomUUID()}.${ext}`, buffer, resumeFile.type);
     }
 
+    const editorialNotes = [
+      ["Phone", parsed.data.phone],
+      ["Current Company", parsed.data.currentCompany],
+      ["Current Role", parsed.data.currentRole],
+      ["College", parsed.data.college],
+      ["Graduation Year", parsed.data.graduationYear],
+      ["Experience", parsed.data.experience],
+      ["Interview Process", parsed.data.interviewProcess],
+      ["Resources Used", parsed.data.resourcesUsed],
+      ["Tips", parsed.data.tips],
+      ["Timeline", parsed.data.timeline],
+      ["Notes for Editors", parsed.data.notes],
+    ]
+      .filter(([, value]) => typeof value === "string" && value.trim())
+      .map(([label, value]) => `## ${label}\n${value}`)
+      .join("\n\n");
+
     const submission = await db.storySubmission.create({
       data: {
         name: sanitizePlainText(parsed.data.name),
@@ -68,7 +95,7 @@ export async function POST(request: NextRequest) {
         linkedin: parsed.data.linkedin || null,
         storyTitle: sanitizePlainText(parsed.data.storyTitle),
         storyContent: sanitizePlainText(parsed.data.storyContent),
-        notes: parsed.data.notes ? sanitizePlainText(parsed.data.notes) : null,
+        notes: editorialNotes ? sanitizePlainText(editorialNotes) : null,
         resumeUrl,
         categoryId: parsed.data.categoryId,
         companyId: parsed.data.companyId,

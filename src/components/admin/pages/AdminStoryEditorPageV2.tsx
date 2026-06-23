@@ -9,10 +9,31 @@ import MediaUploader from "@/components/admin/MediaUploader";
 type CatalogItem = { id: string; name: string; slug: string };
 type Status = "draft" | "published" | "scheduled";
 type PreviewMode = "desktop" | "tablet" | "mobile";
+type LoadedStory = {
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+  content?: string;
+  coverImage?: string | null;
+  seoKeywords?: string | null;
+  companyId?: string | null;
+  currentCompany?: string | null;
+  company?: { name?: string | null } | null;
+  companies?: { companyId: string; company?: { name?: string | null } }[];
+  categories?: { categoryId: string }[];
+  featured?: boolean;
+  published?: boolean;
+  scheduledAt?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  interviewProcess?: unknown;
+  resources?: unknown;
+  advice?: unknown;
+  timeline?: unknown;
+};
 
 const panel = "rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-5";
 const input = "w-full rounded-2xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-blue-400/50";
-const draftKey = "btj-admin-story-new-draft";
 
 function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -26,7 +47,14 @@ function jsonContent(value: string) {
   return value.trim() ? { html: value } : null;
 }
 
-export default function AdminStoryEditorPageV2() {
+function jsonToHtml(value: unknown) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && "html" in value && typeof value.html === "string") return value.html;
+  return "";
+}
+
+export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -34,7 +62,8 @@ export default function AdminStoryEditorPageV2() {
   const [content, setContent] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [tags, setTags] = useState("");
-  const [companyId, setCompanyId] = useState("");
+  const [companyIds, setCompanyIds] = useState<string[]>([]);
+  const [companyBadges, setCompanyBadges] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [companies, setCompanies] = useState<CatalogItem[]>([]);
   const [categories, setCategories] = useState<CatalogItem[]>([]);
@@ -51,6 +80,7 @@ export default function AdminStoryEditorPageV2() {
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saved" | "error" | "autosaved">("idle");
   const [previewMode, setPreviewMode] = useState<PreviewMode>("desktop");
+  const draftKey = storyId ? `btj-admin-story-${storyId}-draft` : "btj-admin-story-new-draft";
 
   useEffect(() => {
     Promise.all([
@@ -60,6 +90,32 @@ export default function AdminStoryEditorPageV2() {
       setCompanies(nextCompanies);
       setCategories(nextCategories);
     });
+
+    if (storyId) {
+      fetch(`/api/admin/stories?id=${storyId}`).then((res) => (res.ok ? res.json() as Promise<LoadedStory> : null)).then((story) => {
+        if (!story) return;
+        setTitle(story.title ?? "");
+        setSlug(story.slug ?? "");
+        setExcerpt(story.excerpt ?? "");
+        setContent(story.content ?? "");
+        setCoverImage(story.coverImage ?? "");
+        setTags(story.seoKeywords ?? "");
+        const linkedCompanyIds = (story.companies ?? []).map((item) => item.companyId);
+        setCompanyIds(linkedCompanyIds.length ? linkedCompanyIds : story.companyId ? [story.companyId] : []);
+        setCompanyBadges(story.currentCompany ?? (story.companies ?? []).map((item) => item.company?.name).filter(Boolean).join(", ") ?? story.company?.name ?? "");
+        setCategoryIds((story.categories ?? []).map((item: { categoryId: string }) => item.categoryId));
+        setFeatured(Boolean(story.featured));
+        setStatus(story.published ? "published" : story.scheduledAt ? "scheduled" : "draft");
+        setScheduledAt(story.scheduledAt ? new Date(story.scheduledAt).toISOString().slice(0, 16) : "");
+        setSeoTitle(story.seoTitle ?? "");
+        setSeoDescription(story.seoDescription ?? "");
+        setInterviewProcess(jsonToHtml(story.interviewProcess));
+        setResourcesUsed(jsonToHtml(story.resources));
+        setTips(jsonToHtml(story.advice));
+        setTimeline(jsonToHtml(story.timeline));
+      });
+      return;
+    }
 
     queueMicrotask(() => {
       const savedDraft = window.localStorage.getItem(draftKey);
@@ -71,7 +127,7 @@ export default function AdminStoryEditorPageV2() {
       setContent((draft.content as string) ?? "");
       setCoverImage((draft.coverImage as string) ?? "");
       setTags((draft.tags as string) ?? "");
-      setCompanyId((draft.companyId as string) ?? "");
+      setCompanyIds((draft.companyIds as string[]) ?? ((draft.companyId as string) ? [draft.companyId as string] : []));
       setCategoryIds((draft.categoryIds as string[]) ?? []);
       setFeatured(Boolean(draft.featured));
       setSeoTitle((draft.seoTitle as string) ?? "");
@@ -82,7 +138,7 @@ export default function AdminStoryEditorPageV2() {
       setTips((draft.tips as string) ?? "");
       setTimeline((draft.timeline as string) ?? "");
     });
-  }, []);
+  }, [draftKey, storyId]);
 
   const wordCount = useMemo(() => {
     return [content, interviewProcess, resourcesUsed, tips, timeline]
@@ -101,7 +157,8 @@ export default function AdminStoryEditorPageV2() {
         content,
         coverImage,
         tags,
-        companyId,
+        companyIds,
+        companyBadges,
         categoryIds,
         featured,
         seoTitle,
@@ -115,16 +172,17 @@ export default function AdminStoryEditorPageV2() {
       if (title || content || excerpt) setSaveState("autosaved");
     }, 1200);
     return () => window.clearTimeout(timer);
-  }, [title, slug, excerpt, content, coverImage, tags, companyId, categoryIds, featured, seoTitle, seoDescription, ogImage, interviewProcess, resourcesUsed, tips, timeline]);
+  }, [draftKey, title, slug, excerpt, content, coverImage, tags, companyIds, companyBadges, categoryIds, featured, seoTitle, seoDescription, ogImage, interviewProcess, resourcesUsed, tips, timeline]);
 
   const save = async (nextStatus: Status = status) => {
     if (!title.trim()) return;
     setSaving(true);
     setSaveState("idle");
     const res = await fetch("/api/admin/stories", {
-      method: "POST",
+      method: storyId ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        id: storyId,
         title,
         slug: slug || slugify(title),
         excerpt,
@@ -135,7 +193,9 @@ export default function AdminStoryEditorPageV2() {
         status: nextStatus,
         featured,
         readTime,
-        companyId: companyId || null,
+        companyId: companyIds[0] || null,
+        companyIds,
+        currentCompany: companyBadges,
         categoryIds,
         scheduledAt: nextStatus === "scheduled" && scheduledAt ? scheduledAt : null,
         seoTitle,
@@ -159,7 +219,7 @@ export default function AdminStoryEditorPageV2() {
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
       <section className="space-y-5">
-        <EditorSection title="Basic Information" description="Title, slug, subtitle, cover image, company, categories, tags, and featured status.">
+        <EditorSection title="Basic Information" description="Title, slug, subtitle, cover image, companies, categories, tags, and featured status.">
           <input
             value={title}
             onChange={(event) => {
@@ -179,12 +239,18 @@ export default function AdminStoryEditorPageV2() {
             <MediaUploader label="Cover image" value={coverImage} onChange={setCoverImage} />
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
-            <select value={companyId} onChange={(event) => setCompanyId(event.target.value)} className={input}>
-              <option value="">No company</option>
-              {companies.map((company) => <option key={company.id} value={company.id}>{company.name}</option>)}
-            </select>
+            <div className="grid max-h-56 gap-2 overflow-y-auto rounded-2xl border border-white/[0.08] bg-black/20 p-3">
+              <p className="text-xs font-medium uppercase tracking-[0.12em] text-white/40">Companies</p>
+              {companies.map((company) => (
+                <label key={company.id} className="flex min-h-9 items-center gap-3 rounded-xl px-2 text-sm text-white/70 hover:bg-white/[0.05]">
+                  <input type="checkbox" checked={companyIds.includes(company.id)} onChange={(event) => setCompanyIds((current) => event.target.checked ? [...current, company.id] : current.filter((id) => id !== company.id))} />
+                  {company.name}
+                </label>
+              ))}
+            </div>
             <input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="Tags, comma separated" className={input} />
           </div>
+          <input value={companyBadges} onChange={(event) => setCompanyBadges(event.target.value)} placeholder="Company badges, comma separated" className={`${input} mt-3`} />
           <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((category) => (
               <label key={category.id} className="flex min-h-11 items-center gap-3 rounded-2xl bg-black/20 p-3 text-sm text-white/70">
@@ -263,6 +329,7 @@ export default function AdminStoryEditorPageV2() {
             <button type="button" onClick={() => save("draft")} disabled={saving} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/[0.08] px-4 py-3 text-sm text-white/75 disabled:opacity-50"><Save className="h-4 w-4" /> Save Draft</button>
             <button type="button" onClick={() => save("published")} disabled={saving} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-500 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"><Send className="h-4 w-4" /> Publish</button>
             <button type="button" onClick={() => save("scheduled")} disabled={saving || !scheduledAt} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-white/[0.06] px-4 py-3 text-sm text-white/75 disabled:opacity-40"><Calendar className="h-4 w-4" /> Schedule</button>
+            {storyId && <button type="button" onClick={async () => { if (confirm("Delete this story?")) { await fetch(`/api/admin/stories?id=${storyId}`, { method: "DELETE" }); router.push("/admin/stories"); } }} disabled={saving} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-red-500/15 px-4 py-3 text-sm text-red-200 disabled:opacity-50">Delete</button>}
           </div>
           {saveState !== "idle" && <p className={`mt-3 text-sm ${saveState === "error" ? "text-red-300" : "text-emerald-300"}`}>{saveState === "error" ? "Save failed" : saveState === "autosaved" ? "Autosaved locally" : "Saved"}</p>}
         </div>

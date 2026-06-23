@@ -26,15 +26,15 @@ const FALLBACK: CategoryItem[] = [
 
 export default function Categories({ categories = FALLBACK }: CategoriesProps) {
   return (
-    <section className="py-24 bg-surface relative overflow-hidden">
-      <div className="absolute inset-0 bg-aurora opacity-30 pointer-events-none" />
+    <section className="relative overflow-hidden bg-surface py-14 sm:py-18">
+      <div className="absolute inset-0 bg-aurora opacity-40 pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <span className="text-sm font-bold text-brand-blue uppercase tracking-widest mb-2 block">
               Explore Topics
             </span>
-            <h2 className="text-4xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Browse Categories
             </h2>
           </div>
@@ -43,25 +43,25 @@ export default function Categories({ categories = FALLBACK }: CategoriesProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {categories.map((category) => (
             <Link
               href={`/category/${category.slug}`}
               key={category.slug}
-              className="group relative h-80 sm:h-96 w-full rounded-2xl overflow-hidden hover:shadow-card-hover transition-all duration-500"
+              className="group relative h-56 w-full overflow-hidden rounded-[20px] border border-white/[0.08] bg-white/[0.05] p-2 shadow-card backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/35 hover:bg-white/[0.075] hover:shadow-card-hover sm:h-64 lg:h-80"
             >
-              <div className="absolute inset-0 w-full h-full">
+              <div className="absolute inset-2 overflow-hidden rounded-[18px]">
                 <Image
                   src={safeImageUrl(category.image, DEFAULT_IMAGES.categoryTech)}
                   alt={category.label}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 w-full p-6 text-white translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <div className="w-8 h-1 bg-brand-blue mb-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
-                <h3 className="text-xl font-bold mb-1">{category.label}</h3>
+              <div className="absolute inset-2 rounded-[18px] bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
+              <div className="absolute bottom-0 left-0 w-full p-6 text-white transition-transform duration-300 group-hover:-translate-y-1">
+                <div className="mb-4 h-1 w-8 rounded-full bg-blue-400 opacity-80" />
+                <h3 className="mb-1 text-xl font-semibold">{category.label}</h3>
                 <p className="text-sm text-white/80 font-medium">{category.count}</p>
               </div>
             </Link>

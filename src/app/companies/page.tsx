@@ -76,7 +76,7 @@ export default async function CompaniesPage() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-xl font-semibold text-white group-hover:text-blue-200">{company.name}</h3>
-                    <p className="mt-1 text-sm text-white/45">{company._count.stories} stories</p>
+                    <p className="mt-1 text-sm text-white/45">{company._count.storyLinks} stories</p>
                   </div>
                   <ArrowUpRight className="ml-auto h-5 w-5 text-white/35 transition group-hover:text-blue-200" />
                 </div>

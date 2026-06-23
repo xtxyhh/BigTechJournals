@@ -70,10 +70,19 @@ export async function GET(request: NextRequest) {
     const bookmarks = await db.bookmark.findMany({
       where: { userId: user.id },
       include: {
-        story: {
+                story: {
           include: {
             company: true,
-            categories: { include: { category: true } },
+            companies: {
+              include: {
+                company: true,
+              },
+            },
+            categories: {
+              include: {
+                category: true,
+              },
+            },
           },
         },
         resource: true,

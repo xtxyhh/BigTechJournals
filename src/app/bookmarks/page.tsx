@@ -25,8 +25,22 @@ export default async function BookmarksPage() {
           story: {
             include: {
               company: true,
-              categories: { include: { category: true } },
-              _count: { select: { likes: true, comments: true } },
+              companies: {
+                include: {
+                  company: true,
+                },
+              },
+              categories: {
+                include: {
+                  category: true,
+                },
+              },
+              _count: {
+                select: {
+                  likes: true,
+                  comments: true,
+                },
+              },
             },
           },
           resource: true,

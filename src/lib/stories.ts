@@ -19,6 +19,7 @@ export interface StoryFilters {
 
 const storyInclude = {
   company: true,
+  companies: { include: { company: true } },
   categories: { include: { category: true } },
   _count: { select: { likes: true, comments: true } },
 } satisfies Prisma.StoryInclude;
@@ -52,17 +53,29 @@ function buildWhere(filters: StoryFilters): Prisma.StoryWhereInput {
   const where: Prisma.StoryWhereInput = { published: true, deletedAt: null };
 
   if (filters.featured) where.featured = true;
-  if (filters.companySlug) where.company = { slug: filters.companySlug };
+  if (filters.companySlug) {
+    const company = filters.companySlug.replace(/-/g, " ");
+    where.OR = [
+      { companies: { some: { company: { slug: filters.companySlug } } } },
+      { companies: { some: { company: { name: { contains: company, mode: "insensitive" } } } } },
+      { company: { slug: filters.companySlug } },
+      { company: { name: { contains: company, mode: "insensitive" } } },
+      { currentCompany: { contains: filters.companySlug, mode: "insensitive" } },
+      { currentCompany: { contains: company, mode: "insensitive" } },
+    ];
+  }
   if (filters.categorySlug) {
     where.categories = { some: { category: { slug: filters.categorySlug } } };
   }
   if (filters.search) {
-    where.OR = [
+    const searchFilters: Prisma.StoryWhereInput[] = [
       { title: { contains: filters.search, mode: "insensitive" } },
       { excerpt: { contains: filters.search, mode: "insensitive" } },
       { authorName: { contains: filters.search, mode: "insensitive" } },
       { content: { contains: filters.search, mode: "insensitive" } },
+      { currentCompany: { contains: filters.search, mode: "insensitive" } },
     ];
+    where.AND = [...(Array.isArray(where.AND) ? where.AND : []), { OR: searchFilters }];
   }
 
   return where;
@@ -151,14 +164,21 @@ export async function getStoryBySlug(slug: string) {
 
 export async function getRecommendedStories(
   storyId: string,
-  companyId: string | null,
+  companyIds: string[],
   limit = 3,
 ) {
   return db.story.findMany({
     where: {
       published: true,
       id: { not: storyId },
-      ...(companyId ? { companyId } : {}),
+      ...(companyIds.length
+        ? {
+            OR: [
+              { companies: { some: { companyId: { in: companyIds } } } },
+              { companyId: { in: companyIds } },
+            ],
+          }
+        : {}),
     },
     include: storyInclude,
     orderBy: { views: "desc" },
@@ -210,6 +230,7 @@ export async function globalSearch(query: string, limit = 8) {
         OR: [
           { title: { contains: query, mode: "insensitive" } },
           { authorName: { contains: query, mode: "insensitive" } },
+          { companies: { some: { company: { name: { contains: query, mode: "insensitive" } } } } },
         ],
       },
       select: { id: true, title: true, slug: true, authorName: true },

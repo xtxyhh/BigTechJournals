@@ -65,13 +65,13 @@ function NavbarContent() {
               <span className="max-w-[9rem] truncate min-[375px]:max-w-none">BigTechJournals</span>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                    "whitespace-nowrap rounded-full px-2.5 py-2 text-xs font-medium transition-all duration-200 xl:px-4 xl:text-sm",
                     isActive(link.href)
                       ? "text-blue-300 bg-blue-500/10 border border-blue-400/10 shadow-[0_0_30px_rgba(59,130,246,.12)]"
                       : "text-surface-muted hover:text-blue-300 hover:bg-white/[0.05] hover:shadow-[0_0_20px_rgba(59,130,246,.08)]",
@@ -86,7 +86,7 @@ function NavbarContent() {
           <div className="flex items-center gap-1 sm:gap-2 md:gap-4 shrink-0">
             <Link
               href="/submit"
-              className="hidden md:block text-sm font-medium text-surface-muted hover:text-blue-400 transition-colors px-4 py-2 hover:bg-white/[0.05] rounded-full"
+              className="hidden whitespace-nowrap px-4 py-2 text-sm font-medium text-surface-muted transition-colors hover:rounded-full hover:bg-white/[0.05] hover:text-blue-400 2xl:block"
             >
               Submit your Story
             </Link>
@@ -95,7 +95,7 @@ function NavbarContent() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/profile"
-                  className="hidden md:block text-sm font-medium text-surface-muted hover:text-blue-400 px-3 py-2 transition-colors"
+                  className="hidden whitespace-nowrap px-3 py-2 text-sm font-medium text-surface-muted transition-colors hover:text-blue-400 xl:block"
                 >
                   Profile
                 </Link>
@@ -105,7 +105,7 @@ function NavbarContent() {
               <SignInButton mode="modal">
                 <button
                   type="button"
-                  className="hidden md:block px-7 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-cyan-500 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  className="hidden whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-[1.02] hover:from-blue-500 hover:to-cyan-500 hover:shadow-xl hover:shadow-blue-500/40 active:scale-[0.98] xl:block xl:px-7"
                 >
                   Sign In
                 </button>
