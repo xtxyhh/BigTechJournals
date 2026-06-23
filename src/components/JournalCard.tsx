@@ -28,7 +28,7 @@ export default function JournalCard({
 }: JournalCardProps) {
   const card = (
     <CardContainer className="inter-var w-full h-full py-2 md:py-4">
-      <CardBody className="bg-surface-card relative group/card border-surface-border w-full h-full min-h-[420px] rounded-xl p-4 border hover:shadow-card-hover hover:-translate-y-1 hover:scale-[1.01] transition-all duration-200">
+      <CardBody className="bg-surface-card relative group/card border-surface-border w-full h-full min-h-[390px] sm:min-h-[420px] rounded-xl p-4 border hover:shadow-card-hover hover:-translate-y-1 hover:scale-[1.01] transition-all duration-200">
         <CardItem translateZ="50" className="w-full mt-2">
           <div className="h-48 rounded-xl bg-surface-elevated relative overflow-hidden w-full">
             {image ? (
@@ -50,7 +50,7 @@ export default function JournalCard({
 
         <CardItem
           translateZ="60"
-          className="text-lg font-bold text-white mt-6 leading-tight group-hover:text-brand-blue transition-colors duration-200"
+          className="text-base sm:text-lg font-bold text-white mt-5 sm:mt-6 leading-tight group-hover:text-brand-blue transition-colors duration-200"
         >
           {title}
         </CardItem>
@@ -63,10 +63,10 @@ export default function JournalCard({
           {preview}
         </CardItem>
 
-        <div className="flex justify-between items-center mt-auto pt-4 border-t border-dashed border-surface-border w-full">
+        <div className="flex flex-wrap justify-between items-center gap-3 mt-auto pt-4 border-t border-dashed border-surface-border w-full">
           <CardItem
             translateZ={20}
-            className="flex items-center gap-2 text-xs font-medium text-surface-muted"
+            className="flex min-w-0 flex-wrap items-center gap-2 text-xs font-medium text-surface-muted"
           >
             <span className="text-white">By {author}</span>
             <span className="w-1 h-1 bg-surface-muted rounded-full" />

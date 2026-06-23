@@ -21,7 +21,7 @@ export default function FiltersBar({
   readOnly = false,
 }: FiltersBarProps) {
   return (
-    <div className="sticky top-[4.5rem] z-30 mb-8 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div className="sticky top-[4.5rem] z-30 mb-8 border-y border-white/[0.08] bg-[#050816]/88 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div className="overflow-x-auto no-scrollbar">
           <div className="flex gap-2">
@@ -33,10 +33,10 @@ export default function FiltersBar({
                 className={cn(
                   "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
                   selectedCategory === category
-                    ? "bg-slate-900 text-white"
+                    ? "bg-blue-500 text-white"
                     : readOnly
-                      ? "bg-transparent text-slate-300 cursor-not-allowed hidden" // Hide other categories in read-only mode
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900",
+                      ? "hidden cursor-not-allowed bg-transparent text-white/25"
+                      : "border border-white/[0.08] bg-white/[0.05] text-white/62 hover:border-blue-300/35 hover:text-white",
                 )}
               >
                 {category}
@@ -46,7 +46,7 @@ export default function FiltersBar({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="hidden md:block text-sm text-slate-400 font-medium">
+          <span className="hidden md:block text-sm text-white/35 font-medium">
             Sort by
           </span>
           {sortOptions.map((option) => (
@@ -56,8 +56,8 @@ export default function FiltersBar({
               className={cn(
                 "px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
                 selectedSort === option
-                  ? "bg-blue-50 text-brand-blue"
-                  : "text-slate-500 hover:text-slate-900",
+                  ? "bg-blue-500/15 text-blue-200"
+                  : "text-white/50 hover:text-white",
               )}
             >
               {option}

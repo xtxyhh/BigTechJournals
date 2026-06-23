@@ -8,6 +8,8 @@ import { buildMetadata } from "@/lib/seo";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const internship = await db.internship.findUnique({ where: { slug }, include: { company: true } });

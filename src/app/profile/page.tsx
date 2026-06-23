@@ -98,7 +98,7 @@ export default function ProfilePage() {
                 <div>
                   <h2 className="text-xl font-bold text-white mb-6">Saved Stories</h2>
                   {bookmarks.length ? (
-                    <div className="grid md:grid-cols-2 gap-6">{bookmarks.map((s) => <StoryCard key={s.id} {...s} />)}</div>
+                    <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{bookmarks.map((s) => <StoryCard key={s.id} {...s} />)}</div>
                   ) : (
                     <p className="text-surface-muted">No saved stories yet. <Link href="/stories" className="text-brand-blue">Browse stories →</Link></p>
                   )}
@@ -109,7 +109,7 @@ export default function ProfilePage() {
                 <div>
                   <h2 className="text-xl font-bold text-white mb-6">Liked Stories</h2>
                   {likes.length ? (
-                    <div className="grid md:grid-cols-2 gap-6">{likes.map((s) => <StoryCard key={s.id} {...s} />)}</div>
+                    <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{likes.map((s) => <StoryCard key={s.id} {...s} />)}</div>
                   ) : (
                     <p className="text-surface-muted">No liked stories yet.</p>
                   )}

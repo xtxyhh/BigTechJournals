@@ -155,7 +155,10 @@ export default function AdminStoriesPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((story) => (
             <article key={story.id} className={`${panel} overflow-hidden`}>
-              <div className="aspect-video bg-black/30">{story.coverImage && <img src={story.coverImage} alt="" className="h-full w-full object-cover" />}</div>
+              <div className="aspect-video bg-black/30">{story.coverImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={story.coverImage} alt="" className="h-full w-full object-cover" />
+              )}</div>
               <div className="space-y-3 p-5">
                 <h2 className="line-clamp-2 font-semibold text-white">{story.title}</h2>
                 <p className="line-clamp-2 text-sm text-white/50">{story.excerpt}</p>

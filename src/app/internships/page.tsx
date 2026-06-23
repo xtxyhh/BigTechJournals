@@ -12,7 +12,7 @@ export const metadata = buildMetadata({
   path: "/internships",
 });
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function InternshipsPage({ searchParams }: { searchParams: Promise<{ q?: string; company?: string; location?: string; remote?: string }> }) {
   const params = await searchParams;
@@ -100,7 +100,7 @@ export default async function InternshipsPage({ searchParams }: { searchParams: 
         </div>
 
         {internships.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {internships.map((internship) => (
               <article key={internship.id} className="rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 backdrop-blur-xl">
                 <div className="flex items-start justify-between gap-4">

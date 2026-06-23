@@ -13,6 +13,9 @@ import { getFeaturedStories, getTrendingStories, getLatestStories } from "@/lib/
 import { getAllCompanies, getAllCategories } from "@/lib/companies";
 import { getSiteSettings } from "@/lib/settings";
 import { buildMetadata } from "@/lib/seo";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   try {
@@ -50,9 +53,7 @@ async function getHomeData() {
           author: latest[0].authorName,
           role: latest[0].authorRole ?? "Engineer",
           slug: latest[0].slug,
-          coverImage:
-            latest[0].coverImage ??
-            "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+          coverImage: safeImageUrl(latest[0].coverImage, DEFAULT_IMAGES.storyCover),
         }
       : null;
 
@@ -69,7 +70,7 @@ async function getHomeData() {
     const categoryItems = categories.slice(0, 5).map((c) => ({
       label: c.name,
       slug: c.slug,
-      image: c.image ?? "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: safeImageUrl(c.image, DEFAULT_IMAGES.categoryTech),
       count: `${c._count.stories}+ Stories`,
     }));
 

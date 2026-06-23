@@ -1,6 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+
+const storyScalarFields = [
+  "title",
+  "slug",
+  "excerpt",
+  "content",
+  "coverImage",
+  "authorName",
+  "authorImage",
+  "authorRole",
+  "linkedin",
+  "twitter",
+  "instagram",
+  "published",
+  "featured",
+  "readTime",
+  "outcomeType",
+  "outcomeText",
+  "careerStage",
+  "seoTitle",
+  "seoDescription",
+  "trending",
+  "github",
+  "candidatePhoto",
+  "country",
+  "experience",
+  "currentCompany",
+  "previousCompany",
+  "salary",
+  "seoKeywords",
+  "canonicalUrl",
+] as const;
+
+function cleanOptionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function buildStoryData(body: Record<string, unknown>) {
+  const data: Record<string, unknown> = {};
+
+  for (const field of storyScalarFields) {
+    if (field in body) data[field] = body[field];
+  }
+
+  if ("coverImage" in data) data.coverImage = cleanOptionalString(data.coverImage);
+  if ("authorImage" in data) data.authorImage = cleanOptionalString(data.authorImage);
+  if ("linkedin" in data) data.linkedin = cleanOptionalString(data.linkedin);
+  if ("twitter" in data) data.twitter = cleanOptionalString(data.twitter);
+  if ("instagram" in data) data.instagram = cleanOptionalString(data.instagram);
+  if ("github" in data) data.github = cleanOptionalString(data.github);
+  if ("candidatePhoto" in data) data.candidatePhoto = cleanOptionalString(data.candidatePhoto);
+  if ("country" in data) data.country = cleanOptionalString(data.country);
+  if ("experience" in data) data.experience = cleanOptionalString(data.experience);
+  if ("currentCompany" in data) data.currentCompany = cleanOptionalString(data.currentCompany);
+  if ("previousCompany" in data) data.previousCompany = cleanOptionalString(data.previousCompany);
+  if ("salary" in data) data.salary = cleanOptionalString(data.salary);
+  if ("seoKeywords" in data) data.seoKeywords = cleanOptionalString(data.seoKeywords);
+  if ("canonicalUrl" in data) data.canonicalUrl = cleanOptionalString(data.canonicalUrl);
+
+  data.companyId = cleanOptionalString(body.companyId);
+
+  if ("timeline" in body) data.timeline = body.timeline || null;
+  if ("interviewProcess" in body) data.interviewProcess = body.interviewProcess || null;
+  if ("resources" in body) data.resources = body.resources || null;
+  if ("mistakes" in body) data.mistakes = body.mistakes || null;
+  if ("advice" in body) data.advice = body.advice || null;
+
+  if (body.status === "published") {
+    data.published = true;
+    data.publishedAt = new Date();
+    data.scheduledAt = null;
+  } else if (body.status === "scheduled") {
+    data.published = false;
+    data.scheduledAt = typeof body.scheduledAt === "string" && body.scheduledAt ? new Date(body.scheduledAt) : null;
+  } else if ("published" in body && body.published === true) {
+    data.publishedAt = new Date();
+  }
+
+  return data;
+}
 
 export async function GET() {
   try {
@@ -22,40 +103,17 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin();
-    const body = await request.json();
+    const body = (await request.json()) as Record<string, unknown>;
     
-    const { categoryIds, timeline, interviewProcess, resources, mistakes, advice, ...data } = body;
+    const categoryIds = Array.isArray(body.categoryIds) ? body.categoryIds.filter((id): id is string => typeof id === "string") : [];
 
     const story = await db.story.create({
-      data: {
-        ...data,
-        coverImage: data.coverImage || null,
-        linkedin: data.linkedin || null,
-        twitter: data.twitter || null,
-        instagram: data.instagram || null,
-        github: data.github || null,
-        candidatePhoto: data.candidatePhoto || null,
-        country: data.country || null,
-        experience: data.experience || null,
-        currentCompany: data.currentCompany || null,
-        previousCompany: data.previousCompany || null,
-        salary: data.salary || null,
-        timeline: timeline || null,
-        interviewProcess: interviewProcess || null,
-        resources: resources || null,
-        mistakes: mistakes || null,
-        advice: advice || null,
-        seoKeywords: data.seoKeywords || null,
-        canonicalUrl: data.canonicalUrl || null,
-        companyId: data.companyId || null,
-        publishedAt: data.status === "published" ? new Date() : null,
-        scheduledAt: data.status === "scheduled" ? data.scheduledAt ? new Date(data.scheduledAt) : null : null,
-      },
+      data: buildStoryData(body) as Prisma.StoryUncheckedCreateInput,
     });
 
-    if (categoryIds?.length) {
+    if (categoryIds.length) {
       await db.storyCategory.createMany({
-        data: categoryIds.map((categoryId: string) => ({ storyId: story.id, categoryId })),
+        data: categoryIds.map((categoryId) => ({ storyId: story.id, categoryId })),
       });
     }
 
@@ -69,46 +127,20 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     await requireAdmin();
-    const body = await request.json();
-    const { id, categoryIds, timeline, interviewProcess, resources, mistakes, advice, ...data } = body;
+    const body = (await request.json()) as Record<string, unknown>;
+    const id = typeof body.id === "string" ? body.id : null;
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-    const updateData: Record<string, unknown> = {
-      ...data,
-      coverImage: data.coverImage || null,
-      linkedin: data.linkedin || null,
-      twitter: data.twitter || null,
-      instagram: data.instagram || null,
-      github: data.github || null,
-      candidatePhoto: data.candidatePhoto || null,
-      country: data.country || null,
-      experience: data.experience || null,
-      currentCompany: data.currentCompany || null,
-      previousCompany: data.previousCompany || null,
-      salary: data.salary || null,
-    };
-
-    if (timeline !== undefined) updateData.timeline = timeline;
-    if (interviewProcess !== undefined) updateData.interviewProcess = interviewProcess;
-    if (resources !== undefined) updateData.resources = resources;
-    if (mistakes !== undefined) updateData.mistakes = mistakes;
-    if (advice !== undefined) updateData.advice = advice;
-    if (data.seoKeywords !== undefined) updateData.seoKeywords = data.seoKeywords;
-    if (data.canonicalUrl !== undefined) updateData.canonicalUrl = data.canonicalUrl;
-
-    if (data.status === "published" && !data.publishedAt) {
-      updateData.publishedAt = new Date();
-    }
-    if (data.status === "scheduled" && data.scheduledAt) {
-      updateData.scheduledAt = new Date(data.scheduledAt);
-    }
+    const categoryIds = Array.isArray(body.categoryIds) ? body.categoryIds.filter((categoryId): categoryId is string => typeof categoryId === "string") : undefined;
+    const updateData = buildStoryData(body) as Prisma.StoryUncheckedUpdateInput;
 
     const story = await db.story.update({ where: { id }, data: updateData });
 
-    if (categoryIds) {
+    if (categoryIds !== undefined) {
       await db.storyCategory.deleteMany({ where: { storyId: id } });
       if (categoryIds.length) {
         await db.storyCategory.createMany({
-          data: categoryIds.map((categoryId: string) => ({ storyId: id, categoryId })),
+          data: categoryIds.map((categoryId) => ({ storyId: id, categoryId })),
         });
       }
     }

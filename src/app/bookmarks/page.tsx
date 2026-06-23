@@ -72,7 +72,7 @@ export default async function BookmarksPage() {
             <div className="mb-6 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">
               <Bookmark className="h-4 w-4" /> {bookmarks.length} saved items
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {bookmarks.map((bookmark) => {
                 if (bookmark.story) return <StoryCard key={bookmark.id} {...toStoryCard(bookmark.story)} />;
                 const item = bookmark.resource ?? bookmark.internship ?? bookmark.roadmap;

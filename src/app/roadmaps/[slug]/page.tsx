@@ -8,6 +8,8 @@ import { buildMetadata } from "@/lib/seo";
 type PageProps = { params: Promise<{ slug: string }> };
 type RoadmapNode = { title: string; description?: string; resources?: string[] };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const roadmap = await db.roadmap.findUnique({ where: { slug }, include: { company: true } });

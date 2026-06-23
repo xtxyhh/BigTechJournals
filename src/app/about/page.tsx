@@ -12,7 +12,7 @@ export const metadata = buildMetadata({
   path: "/about",
 });
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
   const [storyCount, companyCount, resourceCount, subscriberCount] = await Promise.all([

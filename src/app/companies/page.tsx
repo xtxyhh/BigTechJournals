@@ -12,7 +12,7 @@ export const metadata = buildMetadata({
   path: "/companies",
 });
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function CompaniesPage() {
   const companies = await getAllCompanies();
@@ -63,7 +63,7 @@ export default async function CompaniesPage() {
         </div>
 
         {companies.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {companies.map((company) => (
               <Link key={company.id} href={`/company/${company.slug}`} className="group rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 backdrop-blur-xl transition hover:border-blue-300/35 hover:bg-white/[0.075]">
                 <div className="flex items-start gap-4">

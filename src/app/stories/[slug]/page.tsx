@@ -6,11 +6,14 @@ import {
   toStoryCard,
 } from "@/lib/stories";
 import { buildMetadata, buildArticleJsonLd } from "@/lib/seo";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 import StoryPageClient from "./StoryPageClient";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
@@ -20,7 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
     title: story.seoTitle ?? story.title,
     description: story.seoDescription ?? story.excerpt,
     path: `/stories/${slug}`,
-    image: story.coverImage ?? undefined,
+    image: safeImageUrl(story.coverImage, DEFAULT_IMAGES.storyCover),
     type: "article",
     publishedTime: story.createdAt.toISOString(),
     author: story.authorName,
@@ -44,9 +47,9 @@ export default async function StoryPage({ params }: PageProps) {
     slug: story.slug,
     excerpt: story.excerpt,
     content: story.content,
-    coverImage: story.coverImage,
+    coverImage: safeImageUrl(story.coverImage, DEFAULT_IMAGES.storyCover),
     authorName: story.authorName,
-    authorImage: story.authorImage,
+    authorImage: safeImageUrl(story.authorImage, DEFAULT_IMAGES.avatar),
     authorRole: story.authorRole,
     readTime: story.readTime,
     views: story.views,
@@ -57,7 +60,7 @@ export default async function StoryPage({ params }: PageProps) {
       ? {
           name: story.company.name,
           slug: story.company.slug,
-          logo: story.company.logo,
+          logo: safeImageUrl(story.company.logo, DEFAULT_IMAGES.companyLogo),
           description: story.company.description,
         }
       : null,
@@ -77,6 +80,10 @@ export default async function StoryPage({ params }: PageProps) {
         image: comment.user.image,
       },
     })),
+    interviewProcess: story.interviewProcess,
+    resources: story.resources,
+    advice: story.advice,
+    timeline: story.timeline,
   };
 
   const recommended = recommendedStories

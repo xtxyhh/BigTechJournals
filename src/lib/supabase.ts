@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+export const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export const supabaseAdmin =
   supabaseUrl && supabaseServiceKey
@@ -16,6 +16,10 @@ export const STORAGE_BUCKETS = {
   resumes: "resumes",
 } as const;
 
+export function hasSupabaseCredentials() {
+  return Boolean(supabaseUrl && supabaseServiceKey);
+}
+
 export async function uploadFile(
   bucket: keyof typeof STORAGE_BUCKETS,
   path: string,
@@ -23,7 +27,7 @@ export async function uploadFile(
   contentType: string,
 ): Promise<string | null> {
   if (!supabaseAdmin) {
-    console.warn("Supabase not configured — file upload skipped");
+    console.warn("Supabase not configured - file upload skipped");
     return null;
   }
 

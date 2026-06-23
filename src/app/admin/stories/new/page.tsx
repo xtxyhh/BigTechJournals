@@ -1,1 +1,1 @@
-export { default } from "@/components/admin/pages/AdminStoryEditorPage";
+export { default } from "@/components/admin/pages/AdminStoryEditorPageV2";

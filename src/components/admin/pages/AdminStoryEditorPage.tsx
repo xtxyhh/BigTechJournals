@@ -187,7 +187,10 @@ export default function AdminStoryEditorPage() {
         <div className={panel}>
           <h2 className="mb-4 flex items-center gap-2 font-semibold text-white"><Eye className="h-4 w-4" /> Live Preview</h2>
           <div className="overflow-hidden rounded-2xl bg-black/20">
-            {coverImage && <img src={coverImage} alt="" className="aspect-video w-full object-cover" />}
+            {coverImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={coverImage} alt="" className="aspect-video w-full object-cover" />
+            )}
             <div className="p-4">
               <p className="text-lg font-semibold text-white">{title || "Untitled story"}</p>
               <p className="mt-2 line-clamp-3 text-sm text-white/50">{excerpt || "Excerpt preview appears here."}</p>

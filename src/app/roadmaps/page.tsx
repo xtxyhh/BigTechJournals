@@ -12,6 +12,8 @@ export const metadata = buildMetadata({
   path: "/roadmaps",
 });
 
+export const dynamic = "force-dynamic";
+
 export default async function RoadmapsPage({ searchParams }: { searchParams: Promise<{ q?: string; role?: string; company?: string }> }) {
   const params = await searchParams;
   const q = params.q?.trim();
@@ -64,7 +66,7 @@ export default async function RoadmapsPage({ searchParams }: { searchParams: Pro
 
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
         {roadmaps.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {roadmaps.map((roadmap) => (
               <article key={roadmap.id} className="rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 backdrop-blur-xl">
                 <div className="flex items-start justify-between gap-4">

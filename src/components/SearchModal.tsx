@@ -38,7 +38,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] sm:pt-[15vh] px-4"
+      className="fixed inset-0 z-[100] flex items-start justify-center px-2 pt-[max(1rem,env(safe-area-inset-top))] sm:px-4 sm:pt-[15vh]"
       role="dialog"
       aria-modal="true"
       aria-label="Search"
@@ -48,7 +48,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-2xl bg-surface-card rounded-2xl shadow-2xl shadow-blue-500/10 border border-white/[0.08] overflow-hidden animate-fade-up">
+      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-surface-card shadow-2xl shadow-blue-500/10 animate-fade-up">
         <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.08]">
           <Search className="w-5 h-5 text-surface-muted shrink-0" />
           <input
@@ -57,7 +57,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
             placeholder="Search stories, companies, categories..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 text-base sm:text-lg outline-none bg-transparent text-white placeholder:text-surface-muted/70"
+            className="min-w-0 flex-1 text-base outline-none bg-transparent text-white placeholder:text-surface-muted/70 sm:text-lg"
             aria-label="Search query"
           />
           {loading && <Loader2 className="w-4 h-4 animate-spin text-surface-muted" aria-hidden="true" />}
@@ -67,14 +67,14 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="p-1 hover:bg-white/[0.05] rounded-lg transition-colors duration-200"
+            className="grid min-h-11 min-w-11 place-items-center rounded-lg transition-colors duration-200 hover:bg-white/[0.05]"
             aria-label="Close search"
           >
             <X className="w-5 h-5 text-surface-muted" />
           </button>
         </div>
 
-        <div className="max-h-96 overflow-y-auto p-2">
+        <div className="max-h-[calc(100dvh-7rem)] overflow-y-auto p-2">
           {!query.trim() && (
             <p className="text-sm text-surface-muted text-center py-8">
               Type to search stories, companies, resources, categories, and people
@@ -91,7 +91,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                       key={s.id}
                       href={`/stories/${s.slug}`}
                       onClick={onClose}
-                      className="block px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
+                      className="block min-h-11 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
                     >
                       <p className="font-medium text-white">{s.title}</p>
                       <p className="text-sm text-surface-muted">{s.authorName}</p>
@@ -107,7 +107,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                       key={c.id}
                       href={`/company/${c.slug}`}
                       onClick={onClose}
-                      className="block px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
+                      className="block min-h-11 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
                     >
                       <p className="font-medium text-white">{c.name}</p>
                     </Link>
@@ -122,7 +122,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                       key={c.id}
                       href={`/category/${c.slug}`}
                       onClick={onClose}
-                      className="block px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
+                      className="block min-h-11 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
                     >
                       <p className="font-medium text-white">{c.name}</p>
                     </Link>
@@ -139,7 +139,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={onClose}
-                      className="block px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
+                      className="block min-h-11 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors duration-200"
                     >
                       <p className="font-medium text-white">{resource.name}</p>
                       <p className="text-sm text-surface-muted">{resource.type}</p>
@@ -194,7 +194,7 @@ export function SearchButton({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "flex items-center gap-2 p-2.5 text-surface-muted hover:bg-white/[0.05] rounded-full transition-colors duration-200",
+          "flex min-h-11 min-w-11 items-center justify-center gap-2 text-surface-muted hover:bg-white/[0.05] rounded-full transition-colors duration-200",
           className,
         )}
         aria-label="Search"

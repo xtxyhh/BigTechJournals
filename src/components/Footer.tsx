@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Twitter, Linkedin, Instagram } from "lucide-react";
 
 export interface FooterSettings {
@@ -33,10 +34,8 @@ export default function Footer({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-24">
           <div className="lg:col-span-4 space-y-8">
             <Link href="/" className="text-2xl font-black text-white tracking-tighter flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                <span className="font-serif italic font-bold text-xl">B</span>
-              </div>
-              Big Tech Journals.
+              <Image src="/images/logo/logo-dark.png" alt="" width={40} height={40} className="h-10 w-10 rounded-xl shadow-lg shadow-blue-500/20" />
+              BigTechJournals
             </Link>
             <p className="text-surface-muted text-lg leading-relaxed max-w-sm">{tagline}</p>
             {socials.length > 0 && (

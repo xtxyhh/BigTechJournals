@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
   path: "/trending",
 });
 
-export const revalidate = 900;
+export const dynamic = "force-dynamic";
 
 export default async function TrendingPage() {
   const now = new Date();
@@ -109,7 +109,7 @@ export default async function TrendingPage() {
               </Link>
             </div>
             {section.stories.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {section.stories.map((story) => (
                   <StoryCard key={story.id} {...story} />
                 ))}

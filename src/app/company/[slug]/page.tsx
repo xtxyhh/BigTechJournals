@@ -13,6 +13,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const company = await getCompanyBySlug(slug);
@@ -130,7 +132,7 @@ export default async function CompanyPage({ params }: PageProps) {
         <section className="py-16 bg-[#050816]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-white mb-10">Top {company.name} Stories</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {storyCards.map((story) => (
                 <StoryCard key={story.id} {...story} />
               ))}
@@ -171,7 +173,7 @@ export default async function CompanyPage({ params }: PageProps) {
         <section className="py-16 bg-[#050816]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-white mb-10">Recommended Resources</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
               {resources.books && resources.books.length > 0 && (
                 <div className="bg-white/[0.05] rounded-[24px] p-6 border border-white/[0.08] backdrop-blur-xl">
                   <BookOpen className="w-6 h-6 text-blue-300 mb-3" />

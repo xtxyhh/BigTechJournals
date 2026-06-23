@@ -1,5 +1,6 @@
 import JournalCard from "./JournalCard";
 import { ArrowRight } from "lucide-react";
+import { DEFAULT_IMAGES } from "@/lib/images";
 
 const topics = [
   "Logic Building", "System Design", "Leadership", "Startups", "Web Development", "Design to Code", "View All"
@@ -14,7 +15,7 @@ const topicJournals = [
     category: "System Design",
     company: "Netflix", 
     role: "Architect",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Network abstract
+    image: DEFAULT_IMAGES.categoryTech,
   },
   {
     title: "The Art of Code Review",
@@ -24,7 +25,7 @@ const topicJournals = [
     category: "Leadership",
     company: "Apple", 
     role: "Tech Lead",
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // People talking
+    image: DEFAULT_IMAGES.categoryCareer,
   },
   {
     title: "React Server Components Explained",
@@ -34,7 +35,7 @@ const topicJournals = [
     category: "Web Dev",
     company: "Vercel", 
     role: "DevRel",
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // React logo/code
+    image: DEFAULT_IMAGES.categoryInternships,
   }
 ];
 

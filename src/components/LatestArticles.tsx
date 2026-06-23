@@ -2,6 +2,7 @@ import JournalCard from "./JournalCard";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { formatReadTime } from "@/lib/seo";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 
 interface LatestStory {
   title: string;
@@ -55,7 +56,7 @@ export default function LatestArticles({ stories = [] }: LatestArticlesProps) {
               author={story.authorName}
               date={story.createdAt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
               category={story.category}
-              image={story.coverImage ?? "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+              image={safeImageUrl(story.coverImage, DEFAULT_IMAGES.storyCover)}
             />
           ))}
         </div>

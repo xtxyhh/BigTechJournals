@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import {
   Bookmark,
   Building2,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -53,6 +54,10 @@ type StoryData = {
   company?: { name: string; slug: string; logo?: string | null; description?: string | null } | null;
   categories: { category: { id: string; name: string; slug: string } }[];
   comments?: StoryComment[];
+  interviewProcess?: unknown;
+  resources?: unknown;
+  advice?: unknown;
+  timeline?: unknown;
 };
 
 type TocItem = {
@@ -195,6 +200,20 @@ function detectContent(content: string): RenderedContent {
   return { type: "markdown", source: content, toc: extractMarkdownToc(content) };
 }
 
+function richTextValue(value: unknown): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value !== null && "html" in value) {
+    const html = (value as { html?: unknown }).html;
+    return typeof html === "string" ? html : "";
+  }
+  return "";
+}
+
+function hasReadableText(value: string): boolean {
+  return value.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").trim().length > 0;
+}
+
 function renderMarks(text: ReactNode, marks?: TipTapMark[]) {
   return (marks ?? []).reduce<ReactNode>((current, mark) => {
     if (mark.type === "bold") return <strong className="font-semibold text-white">{current}</strong>;
@@ -300,6 +319,38 @@ function MarkdownContent({ source, onZoom }: { source: string; onZoom: (src: str
   );
 }
 
+function RichContent({ rendered, onZoom }: { rendered: RenderedContent; onZoom: (src: string) => void }) {
+  if (rendered.type === "markdown") return <MarkdownContent source={rendered.source} onZoom={onZoom} />;
+  if (rendered.type === "html") return <div className="html-story" dangerouslySetInnerHTML={{ __html: rendered.html }} />;
+  return <>{rendered.doc.content?.map((node, index) => renderTipTapNode(node, index, onZoom))}</>;
+}
+
+function StorySection({
+  id,
+  title,
+  eyebrow,
+  source,
+  onZoom,
+}: {
+  id: string;
+  title: string;
+  eyebrow: string;
+  source: string;
+  onZoom: (src: string) => void;
+}) {
+  const rendered = useMemo(() => detectContent(source), [source]);
+
+  return (
+    <section id={id} className="story-content mt-6 scroll-mt-28 rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8 md:p-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">{eyebrow}</p>
+      <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">{title}</h2>
+      <div className="mt-2">
+        <RichContent rendered={rendered} onZoom={onZoom} />
+      </div>
+    </section>
+  );
+}
+
 function StoryLinkCard({ story, direction }: { story: StoryCardProps; direction: "previous" | "next" }) {
   return (
     <Link href={`/stories/${story.id}`} className="group rounded-3xl border border-white/[0.08] bg-white/[0.05] p-5 transition hover:border-blue-400/35 hover:bg-white/[0.075]">
@@ -328,6 +379,24 @@ export default function StoryExperienceClient({
   const rendered = useMemo(() => detectContent(story.content), [story.content]);
   const { liked, toggle: toggleLike } = useLike(story.id);
   const { bookmarked, toggle: toggleBookmark } = useBookmark(story.id);
+  const richSections = useMemo(
+    () =>
+      [
+        { id: "interview-process", title: "Interview Process", eyebrow: "Process", source: richTextValue(story.interviewProcess) },
+        { id: "resources-used", title: "Resources Used", eyebrow: "Preparation", source: richTextValue(story.resources) },
+        { id: "tips", title: "Tips", eyebrow: "Advice", source: richTextValue(story.advice) },
+        { id: "timeline", title: "Timeline", eyebrow: "Journey", source: richTextValue(story.timeline) },
+      ].filter((section) => hasReadableText(section.source)),
+    [story.advice, story.interviewProcess, story.resources, story.timeline],
+  );
+  const sectionNav = useMemo(
+    () => [
+      { id: "story", text: "Story", icon: Clock },
+      ...richSections.map((section) => ({ id: section.id, text: section.title, icon: section.id === "timeline" ? CalendarDays : MessageCircle })),
+      ...(recommended.length ? [{ id: "related-stories", text: "Related Stories", icon: ChevronRight }] : []),
+    ],
+    [recommended.length, richSections],
+  );
 
   useEffect(() => {
     const currentUrl = window.location.href;
@@ -426,14 +495,31 @@ export default function StoryExperienceClient({
         </div>
       </header>
 
+      <nav className="sticky top-1 z-40 border-y border-white/[0.08] bg-[#050816]/88 px-4 py-3 backdrop-blur-xl lg:hidden" aria-label="Story sections">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {sectionNav.map((item) => (
+            <a key={item.id} href={`#${item.id}`} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.05] px-4 text-sm text-white/68">
+              <item.icon className="h-4 w-4 text-blue-300" />
+              {item.text}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       <main className="mx-auto grid max-w-7xl gap-8 px-4 pb-20 sm:px-6 lg:grid-cols-[220px_minmax(0,760px)_260px] lg:px-8">
         <aside className="hidden lg:block">
-          {rendered.toc.length > 0 && (
+          {sectionNav.length > 0 && (
             <nav className="sticky top-28 rounded-3xl border border-white/[0.08] bg-white/[0.05] p-4 backdrop-blur-xl" aria-label="Table of contents">
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/35">On this page</p>
               <div className="space-y-1">
+                {sectionNav.map((item) => (
+                  <a key={item.id} href={`#${item.id}`} className="flex items-center gap-2 rounded-2xl px-3 py-2 text-sm text-white/55 transition hover:bg-white/[0.06] hover:text-white">
+                    <item.icon className="h-4 w-4 text-blue-300/80" />
+                    {item.text}
+                  </a>
+                ))}
                 {rendered.toc.map((item) => (
-                  <a key={item.id} href={`#${item.id}`} className={cn("block rounded-2xl px-3 py-2 text-sm text-white/55 transition hover:bg-white/[0.06] hover:text-white", item.level === 3 && "pl-6 text-xs")}>
+                  <a key={item.id} href={`#${item.id}`} className={cn("block rounded-2xl px-3 py-2 text-sm text-white/42 transition hover:bg-white/[0.06] hover:text-white", item.level === 3 && "pl-6 text-xs")}>
                     {item.text}
                   </a>
                 ))}
@@ -444,16 +530,27 @@ export default function StoryExperienceClient({
 
         <div className="min-w-0">
           <section
+            id="story"
             className="story-content rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-8 md:p-10"
             onClick={(event) => {
               const target = event.target;
               if (target instanceof HTMLImageElement && target.src) setZoomedImage(target.src);
             }}
           >
-            {rendered.type === "markdown" && <MarkdownContent source={rendered.source} onZoom={setZoomedImage} />}
-            {rendered.type === "html" && <div className="html-story" dangerouslySetInnerHTML={{ __html: rendered.html }} />}
-            {rendered.type === "tiptap" && rendered.doc.content?.map((node, index) => renderTipTapNode(node, index, setZoomedImage))}
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Story</p>
+            <RichContent rendered={rendered} onZoom={setZoomedImage} />
           </section>
+
+          {richSections.map((section) => (
+            <StorySection
+              key={section.id}
+              id={section.id}
+              title={section.title}
+              eyebrow={section.eyebrow}
+              source={section.source}
+              onZoom={setZoomedImage}
+            />
+          ))}
 
           <section className="mt-6 flex flex-wrap items-center gap-3 rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-4 backdrop-blur-xl">
             <button type="button" onClick={toggleLike} className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition", liked ? "border-red-400/30 bg-red-500/15 text-red-200" : "border-white/[0.1] text-white/68 hover:border-red-400/35 hover:text-red-200")}>
@@ -463,13 +560,16 @@ export default function StoryExperienceClient({
               <Bookmark className={cn("h-4 w-4", bookmarked && "fill-blue-300")} /> Bookmark
             </button>
             <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
-              <Linkedin className="h-4 w-4" /> Share
+              <Linkedin className="h-4 w-4" /> LinkedIn
             </a>
             <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(story.title)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
-              <Twitter className="h-4 w-4" /> Tweet
+              <Twitter className="h-4 w-4" /> Twitter/X
+            </a>
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${story.title} ${shareUrl}`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-emerald-400/35 hover:text-emerald-200">
+              <MessageCircle className="h-4 w-4" /> WhatsApp
             </a>
             <button type="button" onClick={copyLink} className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
-              <Copy className="h-4 w-4" /> Copy link
+              <Copy className="h-4 w-4" /> Copy Link
             </button>
           </section>
 
@@ -539,7 +639,7 @@ export default function StoryExperienceClient({
       </main>
 
       {recommended.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <section id="related-stories" className="mx-auto scroll-mt-28 max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">Recommended</p>
@@ -549,7 +649,7 @@ export default function StoryExperienceClient({
               All stories
             </Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {recommended.map((item) => <StoryCard key={item.id} {...item} />)}
           </div>
         </section>

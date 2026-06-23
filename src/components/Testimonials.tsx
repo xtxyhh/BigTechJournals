@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
 import Link from "next/link";
+import { DEFAULT_IMAGES } from "@/lib/images";
 
 const TESTIMONIALS = [
   {
@@ -11,10 +12,8 @@ const TESTIMONIALS = [
       "The lovely team at DesignMe has provided our startup with significant leverage. Their work is exceptionally professional, and Adrian is always attentive to our needs.",
     name: "Patrick Nawrocki",
     role: "UX Manager at Superhabits",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=100&h=100",
-    storyImage:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    avatar: DEFAULT_IMAGES.avatar,
+    storyImage: DEFAULT_IMAGES.storyCover,
     link: "/stories/patrick-nawrocki",
   },
   {
@@ -23,10 +22,8 @@ const TESTIMONIALS = [
       "DesignMe has greatly exceeded our expectations. The communication is always excellent, the turnaround is extremely quick, and the designs are fresh, innovative, and spot on!",
     name: "Rob West",
     role: "CEO of Kingdom Advisors",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?fit=crop&w=100&h=100",
-    storyImage:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+    avatar: DEFAULT_IMAGES.avatar,
+    storyImage: DEFAULT_IMAGES.categoryInternships,
     link: "/stories/rob-west",
   },
   {
@@ -35,10 +32,8 @@ const TESTIMONIALS = [
       "The level of thought they put into each design is amazing. They really understood our brand voice. I'd recommend them to anyone looking for top-tier design work.",
     name: "Sarah Jenkins",
     role: "Product Lead at Spotify",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?fit=crop&w=100&h=100",
-    storyImage:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+    avatar: DEFAULT_IMAGES.avatar,
+    storyImage: DEFAULT_IMAGES.categoryCareer,
     link: "/stories/sarah-jenkins",
   },
   {
@@ -47,10 +42,8 @@ const TESTIMONIALS = [
       "Their approach to problem-solving is unique. They don't just design; they think about the user experience deeply. It's been a game-changer for our dashboard.",
     name: "David Chen",
     role: "Senior Engineer at Google",
-    avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?fit=crop&w=100&h=100",
-    storyImage:
-      "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
+    avatar: DEFAULT_IMAGES.avatar,
+    storyImage: DEFAULT_IMAGES.categoryTech,
     link: "/stories/david-chen",
   },
   {
@@ -59,10 +52,8 @@ const TESTIMONIALS = [
       "I was skeptical about outsourcing design, but this team proved me wrong. They integrated seamlessly with our devs and delivered assets that were developer-ready.",
     name: "Emily Davis",
     role: "CTO at TechFlow",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?fit=crop&w=100&h=100",
-    storyImage:
-      "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=800&q=80",
+    avatar: DEFAULT_IMAGES.avatar,
+    storyImage: DEFAULT_IMAGES.storyCover,
     link: "/stories/emily-davis",
   },
 ];

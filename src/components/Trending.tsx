@@ -3,6 +3,7 @@ import { ArrowUpRight, TrendingUp, Clock, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { timeAgo } from "@/lib/seo";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 
 interface TrendingItem {
   id: string;
@@ -27,7 +28,7 @@ const FALLBACK = [
     authorName: "Sarah Jenkins",
     authorRole: "Staff Engineer at Google",
     createdAt: new Date(Date.now() - 2 * 86400000),
-    coverImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    coverImage: DEFAULT_IMAGES.storyCover,
   },
 ];
 
@@ -70,7 +71,7 @@ export default function Trending({ stories = FALLBACK }: TrendingProps) {
 
               <div className="w-full md:w-64 h-48 md:h-40 rounded-2xl overflow-hidden shrink-0 relative shadow-sm group-hover:shadow-md transition-all">
                 <Image
-                  src={item.coverImage ?? "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                  src={safeImageUrl(item.coverImage, DEFAULT_IMAGES.storyCover)}
                   alt={item.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"

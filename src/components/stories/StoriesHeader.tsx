@@ -3,16 +3,20 @@ import { motion } from "framer-motion";
 
 export default function StoriesHeader() {
   return (
-    <div className="relative py-20 px-6 overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-30 mix-blend-multiply filter animate-blob" />
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-100 rounded-full blur-3xl opacity-30 mix-blend-multiply filter animate-blob animation-delay-2000" />
-      </div>
+    <div className="relative overflow-hidden px-4 py-20 sm:px-6">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_0%,rgba(59,130,246,0.22),transparent_32%),radial-gradient(circle_at_78%_20%,rgba(34,211,238,0.10),transparent_28%)]" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
+        <motion.p
+          className="mb-5 inline-flex rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-200"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+        >
+          Real career intelligence
+        </motion.p>
         <motion.h1
-          className="text-4xl md:text-5xl font-heading font-bold text-slate-900 mb-6 tracking-tight"
+          className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-7xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -21,7 +25,7 @@ export default function StoriesHeader() {
         </motion.h1>
 
         <motion.p
-          className="text-xl md:text-2xl text-slate-600 font-light leading-relaxed"
+          className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/68 sm:text-xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}

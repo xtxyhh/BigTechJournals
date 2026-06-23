@@ -26,9 +26,20 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "BigTechJournals",
+    images: ["/images/logo/logo-dark.png"],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/images/logo/logo-dark.png"],
+  },
+  icons: {
+    icon: "/images/logo/favicon.png",
+    apple: "/images/logo/logo-light.png",
+  },
+  manifest: "/manifest.webmanifest",
+  applicationName: "BigTechJournals",
+  appleWebApp: {
+    title: "BigTechJournals",
   },
   robots: {
     index: true,

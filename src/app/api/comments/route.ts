@@ -1,61 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAuth } from "@/lib/auth";
-import { commentSchema } from "@/lib/validations";
-import { sanitizePlainText } from "@/lib/sanitize";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { syncUserFromClerk } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth();
-    const ip = getClientIp(request);
-    const { success } = rateLimit(`comment:${user.id}:${ip}`, 10, 60_000);
-    if (!success) {
-      return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+    const user = await syncUserFromClerk();
+    if (!user || user.banned) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const parsed = commentSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    const body = (await request.json()) as { storyId?: unknown; content?: unknown; parentId?: unknown };
+    const storyId = typeof body.storyId === "string" ? body.storyId : "";
+    const content = typeof body.content === "string" ? body.content.trim() : "";
+    const parentId = typeof body.parentId === "string" && body.parentId.length > 0 ? body.parentId : null;
+
+    if (!storyId || !content) {
+      return NextResponse.json({ error: "Story and comment are required" }, { status: 400 });
+    }
+    if (content.length > 2000) {
+      return NextResponse.json({ error: "Comment is too long" }, { status: 400 });
     }
 
-    const content = sanitizePlainText(parsed.data.content);
-    if (!content) {
-      return NextResponse.json({ error: "Invalid content" }, { status: 400 });
+    const story = await db.story.findFirst({
+      where: { id: storyId, published: true, deletedAt: null },
+      select: { id: true },
+    });
+    if (!story) {
+      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+    }
+
+    if (parentId) {
+      const parent = await db.comment.findFirst({
+        where: { id: parentId, storyId, deleted: false },
+        select: { id: true },
+      });
+      if (!parent) {
+        return NextResponse.json({ error: "Parent comment not found" }, { status: 404 });
+      }
     }
 
     const comment = await db.comment.create({
-      data: {
-        storyId: parsed.data.storyId,
-        userId: user.id,
-        content,
-      },
-      include: { user: { select: { id: true, name: true, image: true } } },
+      data: { storyId, userId: user.id, content, parentId },
+      include: { user: { select: { name: true, image: true } } },
     });
 
-    return NextResponse.json(comment, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-    const commentId = request.nextUrl.searchParams.get("id");
-    if (!commentId) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-
-    const comment = await db.comment.findUnique({ where: { id: commentId } });
-    if (!comment) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    if (comment.userId !== user.id && user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt.toISOString(),
+      user: comment.user,
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Comment create failed:", error);
     }
-
-    await db.comment.delete({ where: { id: commentId } });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unable to post comment" }, { status: 500 });
   }
 }

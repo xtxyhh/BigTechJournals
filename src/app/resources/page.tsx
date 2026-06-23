@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
   path: "/resources",
 });
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const tracks = [
   { name: "DSA", icon: Code2, query: "dsa" },
@@ -105,7 +105,7 @@ export default async function ResourcesPage({ searchParams }: { searchParams: Pr
         </form>
 
         {resources.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {resources.map((resource) => (
               <article key={resource.id} className="group rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 backdrop-blur-xl transition hover:border-blue-300/35 hover:bg-white/[0.075]">
                 <div className="flex items-start justify-between gap-4">

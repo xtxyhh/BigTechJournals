@@ -19,15 +19,15 @@ export default function Pagination({
   if (shownStories >= totalStories) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-20 pt-8 border-t border-slate-100 flex flex-col items-center">
-      <p className="text-slate-500 text-sm font-medium mb-6">
+    <div className="max-w-7xl mx-auto px-6 pb-20 pt-8 border-t border-white/[0.08] flex flex-col items-center">
+      <p className="text-white/45 text-sm font-medium mb-6">
         Showing {shownStories} of {totalStories} stories
       </p>
 
       <button
         onClick={onLoadMore}
         disabled={isLoadingMore}
-        className="group relative px-8 py-3 bg-white border border-slate-200 text-slate-900 font-medium rounded-full hover:border-slate-300 hover:shadow-md transition-all active:scale-95 disabled:opacity-70 disabled:pointer-events-none flex items-center gap-2"
+        className="group relative flex min-h-11 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.05] px-8 py-3 font-medium text-white/75 transition-all hover:border-blue-300/35 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-70"
       >
         {isLoadingMore ? (
           <>

@@ -9,6 +9,18 @@ import {
   sendAdminSubmissionAlert,
 } from "@/lib/email";
 
+const ALLOWED_RESUME_TYPES = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+const RESUME_EXTENSIONS: Record<string, string> = {
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+};
+
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
   const { success } = rateLimit(`submit:${ip}`, 3, 3600_000);
@@ -41,13 +53,12 @@ export async function POST(request: NextRequest) {
       if (resumeFile.size > 5 * 1024 * 1024) {
         return NextResponse.json({ error: "Resume must be under 5MB" }, { status: 400 });
       }
-      const allowed = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-      if (!allowed.includes(resumeFile.type)) {
+      if (!ALLOWED_RESUME_TYPES.has(resumeFile.type)) {
         return NextResponse.json({ error: "Resume must be PDF or DOC" }, { status: 400 });
       }
       const buffer = await resumeFile.arrayBuffer();
-      const ext = resumeFile.name.split(".").pop() ?? "pdf";
-      resumeUrl = await uploadFile("resumes", `${Date.now()}-${parsed.data.email}.${ext}`, buffer, resumeFile.type);
+      const ext = RESUME_EXTENSIONS[resumeFile.type] ?? "pdf";
+      resumeUrl = await uploadFile("resumes", `${Date.now()}-${crypto.randomUUID()}.${ext}`, buffer, resumeFile.type);
     }
 
     const submission = await db.storySubmission.create({

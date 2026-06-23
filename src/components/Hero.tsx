@@ -4,6 +4,7 @@ import { ContainerScroll } from "./ui/container-scroll-animation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, ChevronDown, PlayCircle } from "lucide-react";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 
 interface HeroProps {
   spotlight?: {
@@ -18,9 +19,7 @@ interface HeroProps {
 
 export default function Hero({ spotlight, subtitle }: HeroProps) {
   const spotlightTitle = spotlight?.title ?? "How I cracked Morgan Stanley in 1st Year";
-  const spotlightImage =
-    spotlight?.coverImage ??
-    "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80";
+  const spotlightImage = safeImageUrl(spotlight?.coverImage, DEFAULT_IMAGES.storyCover);
 
   return (
     <div className="flex flex-col overflow-hidden bg-surface bg-aurora relative">
@@ -41,7 +40,8 @@ export default function Hero({ spotlight, subtitle }: HeroProps) {
                 </div>
               </div>
               <h1 className="max-w-5xl text-center text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
-                Learn from people who cracked Big Tech.
+                Real Journeys. Real Guidance. 
+                Your Roadmap to Big Tech
               </h1>
             </div>
 

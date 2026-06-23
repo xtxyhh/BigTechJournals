@@ -72,7 +72,7 @@ export default function StoryCard({
           </div>
         </div>
 
-        <div className="flex-1 p-6 flex flex-col">
+        <div className="flex-1 p-4 sm:p-6 flex flex-col">
           {outcome && (
             <div
               className={cn(
@@ -96,8 +96,8 @@ export default function StoryCard({
             {excerpt}
           </p>
 
-          <div className="mt-auto flex items-center justify-between text-xs text-surface-muted font-medium pt-4 border-t border-surface-border">
-            <div className="flex items-center gap-4">
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-3 text-xs text-surface-muted font-medium pt-4 border-t border-surface-border">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 {readTime}
@@ -108,7 +108,7 @@ export default function StoryCard({
               </span>
             </div>
             <span className="text-brand-blue font-semibold group-hover:underline">
-              Read Story →
+              Read Story
             </span>
           </div>
         </div>

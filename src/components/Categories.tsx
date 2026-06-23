@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { DEFAULT_IMAGES, safeImageUrl } from "@/lib/images";
 
 interface CategoryItem {
   label: string;
@@ -16,11 +17,11 @@ interface CategoriesProps {
 }
 
 const FALLBACK: CategoryItem[] = [
-  { label: "Internships", slug: "internships", image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", count: "120+ Stories" },
-  { label: "Big Tech", slug: "big-tech", image: "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", count: "350+ Stories" },
-  { label: "Startups", slug: "startups", image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", count: "80+ Stories" },
-  { label: "Career Growth", slug: "growth", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", count: "150+ Stories" },
-  { label: "AI & ML", slug: "ai-ml", image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", count: "90+ Stories" },
+  { label: "Internships", slug: "internships", image: DEFAULT_IMAGES.categoryInternships, count: "120+ Stories" },
+  { label: "Big Tech", slug: "big-tech", image: DEFAULT_IMAGES.categoryTech, count: "350+ Stories" },
+  { label: "Startups", slug: "startups", image: DEFAULT_IMAGES.storyCover, count: "80+ Stories" },
+  { label: "Career Growth", slug: "growth", image: DEFAULT_IMAGES.categoryCareer, count: "150+ Stories" },
+  { label: "AI & ML", slug: "ai-ml", image: DEFAULT_IMAGES.categoryTech, count: "90+ Stories" },
 ];
 
 export default function Categories({ categories = FALLBACK }: CategoriesProps) {
@@ -51,7 +52,7 @@ export default function Categories({ categories = FALLBACK }: CategoriesProps) {
             >
               <div className="absolute inset-0 w-full h-full">
                 <Image
-                  src={category.image}
+                  src={safeImageUrl(category.image, DEFAULT_IMAGES.categoryTech)}
                   alt={category.label}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"

@@ -51,6 +51,7 @@ interface TipTapEditorProps {
   onChange?: (content: string) => void;
   editable?: boolean;
   placeholder?: string;
+  minHeightClass?: string;
 }
 
 export default function TipTapEditor({
@@ -58,6 +59,7 @@ export default function TipTapEditor({
   onChange,
   editable = true,
   placeholder = "Write something amazing...",
+  minHeightClass = "min-h-[500px]",
 }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -111,7 +113,7 @@ export default function TipTapEditor({
     },
     editorProps: {
       attributes: {
-        class: "prose prose-invert prose-lg max-w-none focus:outline-none min-h-[500px] px-4 py-3",
+        class: `prose prose-invert prose-lg max-w-none focus:outline-none ${minHeightClass} px-4 py-3`,
       },
     },
   });

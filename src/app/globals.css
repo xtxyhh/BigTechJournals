@@ -61,12 +61,64 @@
   html {
     color-scheme: dark;
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
 
   body {
     @apply font-sans bg-surface text-white antialiased;
     min-height: 100vh;
     min-height: 100dvh;
+    overflow-x: clip;
+    width: 100%;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  main,
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  nav {
+    min-width: 0;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  a,
+  span,
+  li {
+    overflow-wrap: anywhere;
+  }
+
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
@@ -117,5 +169,13 @@
 
   .animate-fade-up {
     animation: fade-up 0.4s ease-out forwards;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
