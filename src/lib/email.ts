@@ -5,7 +5,7 @@ const resend = process.env.RESEND_API_KEY
   : null;
 
 const fromEmail = process.env.FROM_EMAIL ?? "BigTechJournals <noreply@bigtechjournals.com>";
-const adminEmail = process.env.ADMIN_EMAIL ?? "admin@bigtechjournals.com";
+const adminEmail = process.env.ADMIN_EMAIL ?? "tanishqgupta891@gmail.com";
 
 export async function sendSubmissionConfirmation(to: string, name: string, title: string) {
   if (!resend) {
