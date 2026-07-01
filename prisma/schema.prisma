@@ -83,6 +83,11 @@ model Story {
   excerpt          String
   content          String
   coverImage       String?
+  coverImageZoom   Float           @default(1)
+  coverImageX      Float           @default(50)
+  coverImageY      Float           @default(50)
+  coverImageObjectPosition String  @default("50% 50%")
+  coverImageCropMode String        @default("cover")
   companyId        String?
   authorName       String
   authorImage      String?
@@ -107,6 +112,8 @@ model Story {
   advice           Json?
   candidatePhoto   String?
   canonicalUrl     String?
+  connectLabel     String?
+  connectUrl       String?
   country          String?
   currentCompany   String?
   experience       String?

@@ -9,6 +9,11 @@ const storyScalarFields = [
   "excerpt",
   "content",
   "coverImage",
+  "coverImageZoom",
+  "coverImageX",
+  "coverImageY",
+  "coverImageObjectPosition",
+  "coverImageCropMode",
   "authorName",
   "authorImage",
   "authorRole",
@@ -33,10 +38,27 @@ const storyScalarFields = [
   "salary",
   "seoKeywords",
   "canonicalUrl",
+  "connectLabel",
+  "connectUrl",
 ] as const;
 
 function cleanOptionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+function cleanOptionalUrl(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  try {
+    const url = new URL(value.trim());
+    return ["http:", "https:"].includes(url.protocol) ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function cleanNumber(value: unknown, fallback: number, min: number, max: number) {
+  const number = typeof value === "number" && Number.isFinite(value) ? value : fallback;
+  return Math.min(max, Math.max(min, number));
 }
 
 function buildStoryData(body: Record<string, unknown>) {
@@ -47,11 +69,19 @@ function buildStoryData(body: Record<string, unknown>) {
   }
 
   if ("coverImage" in data) data.coverImage = cleanOptionalString(data.coverImage);
+  if ("coverImageZoom" in data) data.coverImageZoom = cleanNumber(data.coverImageZoom, 1, 1, 2.5);
+  if ("coverImageX" in data) data.coverImageX = cleanNumber(data.coverImageX, 50, 0, 100);
+  if ("coverImageY" in data) data.coverImageY = cleanNumber(data.coverImageY, 50, 0, 100);
+  if ("coverImageObjectPosition" in data) data.coverImageObjectPosition = typeof data.coverImageObjectPosition === "string" && data.coverImageObjectPosition.trim() ? data.coverImageObjectPosition : "50% 50%";
+  if ("coverImageCropMode" in data) data.coverImageCropMode = data.coverImageCropMode === "contain" ? "contain" : "cover";
   if ("authorImage" in data) data.authorImage = cleanOptionalString(data.authorImage);
-  if ("linkedin" in data) data.linkedin = cleanOptionalString(data.linkedin);
-  if ("twitter" in data) data.twitter = cleanOptionalString(data.twitter);
-  if ("instagram" in data) data.instagram = cleanOptionalString(data.instagram);
-  if ("github" in data) data.github = cleanOptionalString(data.github);
+  for (const field of ["linkedin", "twitter", "instagram", "github", "canonicalUrl", "connectUrl"] as const) {
+    if (field in data) {
+      const url = cleanOptionalUrl(data[field]);
+      if (url === undefined) throw new Error(`Invalid ${field}`);
+      data[field] = url;
+    }
+  }
   if ("candidatePhoto" in data) data.candidatePhoto = cleanOptionalString(data.candidatePhoto);
   if ("country" in data) data.country = cleanOptionalString(data.country);
   if ("experience" in data) data.experience = cleanOptionalString(data.experience);
@@ -59,7 +89,7 @@ function buildStoryData(body: Record<string, unknown>) {
   if ("previousCompany" in data) data.previousCompany = cleanOptionalString(data.previousCompany);
   if ("salary" in data) data.salary = cleanOptionalString(data.salary);
   if ("seoKeywords" in data) data.seoKeywords = cleanOptionalString(data.seoKeywords);
-  if ("canonicalUrl" in data) data.canonicalUrl = cleanOptionalString(data.canonicalUrl);
+  if ("connectLabel" in data) data.connectLabel = cleanOptionalString(data.connectLabel);
 
   const companyIds = Array.isArray(body.companyIds)
     ? body.companyIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim()))

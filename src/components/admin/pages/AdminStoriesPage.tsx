@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Copy, Eye, Grid2X2, List, Pencil, Plus, Search, Star, Trash2, Upload } from "lucide-react";
+import { storyImageStyle, type StoryImageCropMode } from "@/lib/story-image";
 
 type Story = {
   id: string;
@@ -11,6 +12,11 @@ type Story = {
   excerpt: string;
   content?: string;
   coverImage?: string | null;
+  coverImageZoom?: number;
+  coverImageX?: number;
+  coverImageY?: number;
+  coverImageObjectPosition?: string;
+  coverImageCropMode?: string;
   published: boolean;
   featured: boolean;
   scheduledAt?: string | null;
@@ -60,7 +66,20 @@ export default function AdminStoriesPage() {
   };
 
   const duplicateStory = async (story: Story) => {
-    const body = { title: `${story.title} Copy`, slug: `${story.slug}-copy-${Date.now()}`, excerpt: story.excerpt, content: story.content ?? story.excerpt, authorName: "Admin", published: false, coverImage: story.coverImage };
+    const body = {
+      title: `${story.title} Copy`,
+      slug: `${story.slug}-copy-${Date.now()}`,
+      excerpt: story.excerpt,
+      content: story.content ?? story.excerpt,
+      authorName: "Admin",
+      published: false,
+      coverImage: story.coverImage,
+      coverImageZoom: story.coverImageZoom,
+      coverImageX: story.coverImageX,
+      coverImageY: story.coverImageY,
+      coverImageObjectPosition: story.coverImageObjectPosition,
+      coverImageCropMode: story.coverImageCropMode,
+    };
     const res = await fetch("/api/admin/stories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (res.ok) {
       const duplicated = await res.json();
@@ -157,7 +176,18 @@ export default function AdminStoriesPage() {
             <article key={story.id} className={`${panel} overflow-hidden`}>
               <div className="aspect-video bg-black/30">{story.coverImage && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={story.coverImage} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={story.coverImage}
+                  alt=""
+                  className="h-full w-full"
+                  style={storyImageStyle({
+                    zoom: story.coverImageZoom,
+                    x: story.coverImageX,
+                    y: story.coverImageY,
+                    objectPosition: story.coverImageObjectPosition,
+                    cropMode: story.coverImageCropMode as StoryImageCropMode,
+                  })}
+                />
               )}</div>
               <div className="space-y-3 p-5">
                 <h2 className="line-clamp-2 font-semibold text-white">{story.title}</h2>

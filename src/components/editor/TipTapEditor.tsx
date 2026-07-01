@@ -42,7 +42,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const lowlight = createLowlight(common);
 
@@ -61,6 +61,7 @@ export default function TipTapEditor({
   placeholder = "Write something amazing...",
   minHeightClass = "min-h-[500px]",
 }: TipTapEditorProps) {
+  const lastEmittedContent = useRef(content);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -109,7 +110,9 @@ export default function TipTapEditor({
     content,
     editable,
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML());
+      const nextContent = editor.getHTML();
+      lastEmittedContent.current = nextContent;
+      onChange?.(nextContent);
     },
     editorProps: {
       attributes: {
@@ -117,6 +120,17 @@ export default function TipTapEditor({
       },
     },
   });
+
+  useEffect(() => {
+    if (!editor) return;
+    if (content === lastEmittedContent.current) return;
+    if (content === editor.getHTML()) {
+      lastEmittedContent.current = content;
+      return;
+    }
+    editor.commands.setContent(content, { emitUpdate: false });
+    lastEmittedContent.current = content;
+  }, [content, editor]);
 
   const setLink = useCallback(() => {
     if (!editor) return;

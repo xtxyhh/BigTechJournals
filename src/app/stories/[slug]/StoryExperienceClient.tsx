@@ -15,6 +15,7 @@ import {
   Clock,
   Copy,
   Eye,
+  ExternalLink,
   Heart,
   Linkedin,
   Maximize2,
@@ -51,6 +52,8 @@ type StoryData = {
   linkedin?: string | null;
   twitter?: string | null;
   instagram?: string | null;
+  connectLabel?: string | null;
+  connectUrl?: string | null;
   currentCompany?: string | null;
   company?: { name: string; slug: string; logo?: string | null; description?: string | null } | null;
   categories: { category: { id: string; name: string; slug: string } }[];
@@ -349,7 +352,7 @@ function StorySection({
   const rendered = useMemo(() => detectContent(source), [source]);
 
   return (
-    <section id={id} className="story-content mt-6 scroll-mt-28 rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8 md:p-10">
+    <section id={id} className="story-content mt-6 scroll-mt-28 rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/15 backdrop-blur-xl sm:p-8 md:p-10 transition-all duration-300 hover:border-accent-blue/20 hover:shadow-[0_0_40px_rgba(59,130,246,0.06)]">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">{eyebrow}</p>
       <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">{title}</h2>
       <div className="mt-2">
@@ -361,13 +364,14 @@ function StorySection({
 
 function StoryLinkCard({ story, direction }: { story: StoryCardProps; direction: "previous" | "next" }) {
   return (
-    <Link href={`/stories/${story.id}`} className="group rounded-3xl border border-white/[0.08] bg-white/[0.05] p-5 transition hover:border-blue-400/35 hover:bg-white/[0.075]">
+    <Link href={`/stories/${story.id}`} className="group relative rounded-3xl border border-white/[0.08] bg-white/[0.05] p-5 transition-all duration-300 hover:border-accent-blue/40 hover:bg-white/[0.075] hover:shadow-[0_0_28px_rgba(59,130,246,0.12)] block">
       <span className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
         {direction === "previous" ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         {direction === "previous" ? "Previous story" : "Next story"}
       </span>
-      <h3 className="line-clamp-2 text-lg font-semibold text-white group-hover:text-blue-200">{story.title}</h3>
+      <h3 className="line-clamp-2 text-lg font-semibold text-white group-hover:text-accent-blue transition-colors duration-200">{story.title}</h3>
       <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/55">{story.excerpt}</p>
+      <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-accent-blue/0 group-hover:ring-accent-blue/30 transition-all duration-300 pointer-events-none" />
     </Link>
   );
 }
@@ -386,6 +390,7 @@ export default function StoryExperienceClient({
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const rendered = useMemo(() => detectContent(story.content), [story.content]);
   const companies = useMemo(() => companyBadges(story), [story]);
+  const connectHref = useMemo(() => safeUrl(story.connectUrl), [story.connectUrl]);
   const { liked, toggle: toggleLike } = useLike(story.id);
   const { bookmarked, toggle: toggleBookmark } = useBookmark(story.id);
   const richSections = useMemo(
@@ -449,9 +454,12 @@ export default function StoryExperienceClient({
   };
 
   return (
-    <article className="min-h-screen bg-[#050816] text-white">
-      <div className="fixed inset-x-0 top-0 z-[60] h-1 bg-white/[0.06]">
-        <div className="h-full bg-blue-500 transition-[width]" style={{ width: `${progress}%` }} />
+    <article className="min-h-screen bg-surface text-white">
+      <div className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-white/[0.06]">
+        <div
+          className="h-full bg-gradient-to-r from-brand-blue to-accent-blue transition-[width] duration-150"
+          style={{ width: `${progress}%`, boxShadow: progress > 0 ? "0 0 10px rgba(59,130,246,0.7), 0 0 20px rgba(59,130,246,0.35)" : "none" }}
+        />
       </div>
       <Navbar />
 
@@ -460,7 +468,7 @@ export default function StoryExperienceClient({
         {story.coverImage && (
           <div className="absolute inset-x-0 top-16 h-[30rem] opacity-35">
             <Image src={story.coverImage} alt="" fill priority className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050816]/20 via-[#050816]/75 to-[#050816]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface/20 via-surface/75 to-surface" />
           </div>
         )}
         <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
@@ -483,7 +491,7 @@ export default function StoryExperienceClient({
             ))}
           </div>
 
-          <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-br from-white via-blue-100 to-accent-blue drop-shadow-[0_0_30px_rgba(59,130,246,0.2)]">
             {story.title}
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-white/68">{story.excerpt}</p>
@@ -491,9 +499,9 @@ export default function StoryExperienceClient({
           <div className="mt-8 flex flex-col gap-5 border-t border-white/[0.08] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               {story.authorImage ? (
-                <Image src={story.authorImage} alt={story.authorName} width={56} height={56} className="h-14 w-14 rounded-full object-cover ring-1 ring-white/[0.12]" />
+                <Image src={story.authorImage} alt={story.authorName} width={56} height={56} className="h-14 w-14 rounded-full object-cover ring-2 ring-brand-blue/30 shadow-[0_0_18px_rgba(37,99,235,0.3)]" />
               ) : (
-                <div className="grid h-14 w-14 place-items-center rounded-full bg-blue-500/15 text-lg font-bold text-blue-200 ring-1 ring-blue-300/20">
+                <div className="grid h-14 w-14 place-items-center rounded-full bg-brand-blue/15 text-lg font-bold text-blue-200 ring-2 ring-brand-blue/25 shadow-[0_0_14px_rgba(37,99,235,0.25)]">
                   {story.authorName[0]}
                 </div>
               )}
@@ -510,7 +518,7 @@ export default function StoryExperienceClient({
         </div>
       </header>
 
-      <nav className="sticky top-1 z-40 border-y border-white/[0.08] bg-[#050816]/88 px-4 py-3 backdrop-blur-xl lg:hidden" aria-label="Story sections">
+      <nav className="sticky top-1 z-40 border-y border-white/[0.08] bg-surface/88 px-4 py-3 backdrop-blur-xl lg:hidden" aria-label="Story sections">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {sectionNav.map((item) => (
             <a key={item.id} href={`#${item.id}`} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.05] px-4 text-sm text-white/68">
@@ -546,7 +554,7 @@ export default function StoryExperienceClient({
         <div className="min-w-0">
           <section
             id="story"
-            className="story-content rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-8 md:p-10"
+            className="story-content rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-8 md:p-10 transition-all duration-300 hover:border-accent-blue/20 hover:shadow-[0_0_40px_rgba(59,130,246,0.06)]"
             onClick={(event) => {
               const target = event.target;
               if (target instanceof HTMLImageElement && target.src) setZoomedImage(target.src);
@@ -568,22 +576,22 @@ export default function StoryExperienceClient({
           ))}
 
           <section className="mt-6 flex flex-wrap items-center gap-3 rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-4 backdrop-blur-xl">
-            <button type="button" onClick={toggleLike} className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition", liked ? "border-red-400/30 bg-red-500/15 text-red-200" : "border-white/[0.1] text-white/68 hover:border-red-400/35 hover:text-red-200")}>
+            <button type="button" onClick={toggleLike} className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200", liked ? "border-red-400/30 bg-red-500/15 text-red-200 shadow-[0_0_16px_rgba(248,113,113,0.2)]" : "border-white/[0.1] text-white/68 hover:border-red-400/35 hover:text-red-200")}>
               <Heart className={cn("h-4 w-4", liked && "fill-red-400")} /> Like
             </button>
-            <button type="button" onClick={toggleBookmark} className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition", bookmarked ? "border-blue-400/30 bg-blue-500/15 text-blue-200" : "border-white/[0.1] text-white/68 hover:border-blue-400/35 hover:text-blue-200")}>
+            <button type="button" onClick={toggleBookmark} className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200", bookmarked ? "border-blue-400/30 bg-blue-500/15 text-blue-200 shadow-[0_0_16px_rgba(59,130,246,0.2)]" : "border-white/[0.1] text-white/68 hover:border-blue-400/35 hover:text-blue-200")}>
               <Bookmark className={cn("h-4 w-4", bookmarked && "fill-blue-300")} /> Bookmark
             </button>
-            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition-all duration-200 hover:border-accent-blue/35 hover:text-blue-200 hover:shadow-[0_0_14px_rgba(59,130,246,0.15)]">
               <Linkedin className="h-4 w-4" /> LinkedIn
             </a>
-            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(story.title)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(story.title)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition-all duration-200 hover:border-accent-blue/35 hover:text-blue-200 hover:shadow-[0_0_14px_rgba(59,130,246,0.15)]">
               <Twitter className="h-4 w-4" /> Twitter/X
             </a>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${story.title} ${shareUrl}`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-emerald-400/35 hover:text-emerald-200">
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${story.title} ${shareUrl}`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition-all duration-200 hover:border-emerald-400/35 hover:text-emerald-200 hover:shadow-[0_0_14px_rgba(52,211,153,0.15)]">
               <MessageCircle className="h-4 w-4" /> WhatsApp
             </a>
-            <button type="button" onClick={copyLink} className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition hover:border-blue-400/35 hover:text-blue-200">
+            <button type="button" onClick={copyLink} className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-4 py-2 text-sm font-medium text-white/68 transition-all duration-200 hover:border-accent-blue/35 hover:text-blue-200">
               <Copy className="h-4 w-4" /> Copy Link
             </button>
           </section>
@@ -604,8 +612,9 @@ export default function StoryExperienceClient({
                 placeholder="Share a thoughtful note..."
                 className="h-28 w-full resize-none rounded-3xl border border-white/[0.08] bg-black/20 p-4 text-sm text-white outline-none placeholder:text-white/35 focus:border-blue-400/45"
               />
-              <button type="submit" className="mt-3 rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-400">
-                Post comment
+              <button type="submit" className="group relative mt-3 overflow-hidden rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-blue/20 transition-all hover:bg-brand-blue-hover hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                <span className="pointer-events-none absolute inset-0 -translate-x-full [background:linear-gradient(110deg,transparent_40%,rgba(255,255,255,0.3)_50%,transparent_60%)] transition-transform duration-700 ease-out group-hover:translate-x-full" />
+                <span className="relative z-10">Post comment</span>
               </button>
             </form>
             <div className="space-y-3">
@@ -626,7 +635,7 @@ export default function StoryExperienceClient({
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-28 lg:self-start">
-          <section className="rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl">
+          <section className="rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl transition-all duration-300 hover:border-accent-blue/20 hover:shadow-[0_0_28px_rgba(59,130,246,0.08)]">
             <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
               <UserRound className="h-4 w-4 text-blue-300" /> Author
             </p>
@@ -634,15 +643,20 @@ export default function StoryExperienceClient({
             <p className="mt-1 text-sm leading-6 text-white/55">{story.authorRole ?? "Contributor sharing a real career journey."}</p>
             {(story.linkedin || story.twitter || story.instagram) && (
               <div className="mt-4 flex flex-wrap gap-2">
-                {story.linkedin && <a href={story.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200">LinkedIn</a>}
-                {story.twitter && <a href={story.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200">Twitter</a>}
-                {story.instagram && <a href={story.instagram} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200">Instagram</a>}
+                {story.linkedin && <a href={story.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200 hover:border-accent-blue/30 transition-all duration-200">LinkedIn</a>}
+                {story.twitter && <a href={story.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200 hover:border-accent-blue/30 transition-all duration-200">Twitter</a>}
+                {story.instagram && <a href={story.instagram} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/[0.08] px-3 py-1.5 text-xs text-white/65 hover:text-blue-200 hover:border-accent-blue/30 transition-all duration-200">Instagram</a>}
               </div>
+            )}
+            {connectHref && (
+              <a href={connectHref} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-blue-500 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-400">
+                {story.connectLabel?.trim() || "Connect"} <ExternalLink className="h-4 w-4" />
+              </a>
             )}
           </section>
 
           {story.company && (
-            <Link href={`/company/${story.company.slug}`} className="block rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl transition hover:border-blue-400/30">
+            <Link href={`/company/${story.company.slug}`} className="block rounded-[24px] border border-white/[0.08] bg-white/[0.05] p-5 backdrop-blur-xl transition-all duration-300 hover:border-accent-blue/35 hover:shadow-[0_0_28px_rgba(59,130,246,0.12)]">
               <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
                 <Building2 className="h-4 w-4 text-blue-300" /> Company
               </p>
@@ -664,7 +678,7 @@ export default function StoryExperienceClient({
               All stories
             </Link>
           </div>
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" style={{ perspective: "1500px" }}>
             {recommended.map((item) => <StoryCard key={item.id} {...item} />)}
           </div>
         </section>

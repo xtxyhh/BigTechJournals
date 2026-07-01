@@ -10,7 +10,5 @@ export const DEFAULT_IMAGES = {
 export function safeImageUrl(value?: string | null, fallback: string = DEFAULT_IMAGES.storyCover) {
   const trimmed = value?.trim();
   if (!trimmed) return fallback;
-  return trimmed.includes("images.unsplash.com") || trimmed.includes("plus.unsplash.com")
-    ? fallback
-    : trimmed;
+  return trimmed;
 }

@@ -52,6 +52,11 @@ export default async function StoryPage({ params }: PageProps) {
     excerpt: story.excerpt,
     content: story.content,
     coverImage: safeImageUrl(story.coverImage, DEFAULT_IMAGES.storyCover),
+    coverImageZoom: story.coverImageZoom,
+    coverImageX: story.coverImageX,
+    coverImageY: story.coverImageY,
+    coverImageObjectPosition: story.coverImageObjectPosition,
+    coverImageCropMode: story.coverImageCropMode,
     authorName: story.authorName,
     authorImage: safeImageUrl(story.authorImage, DEFAULT_IMAGES.avatar),
     authorRole: story.authorRole,
@@ -60,6 +65,8 @@ export default async function StoryPage({ params }: PageProps) {
     linkedin: story.linkedin,
     twitter: story.twitter,
     instagram: story.instagram,
+    connectLabel: story.connectLabel,
+    connectUrl: story.connectUrl,
     currentCompany: story.currentCompany,
     company: story.company
       ? {

@@ -78,7 +78,7 @@ export default function StoriesPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050816] pb-20 text-white">
+    <div className="min-h-screen bg-surface pb-20 text-white">
       <Navbar />
       <main className="pt-16">
         <StoriesHeader />

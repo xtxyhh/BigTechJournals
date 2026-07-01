@@ -45,6 +45,8 @@ const editableSettingsSchema = z.object({
   logo: z.string().url().optional().or(z.literal("")),
   favicon: z.string().url().optional().or(z.literal("")),
   copyright: z.string().max(160).optional(),
+  themeMode: z.enum(["dark", "light", "system"]).optional(),
+  accentColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/).optional().or(z.literal("")),
   founderName: z.string().max(120).optional(),
   founderImage: z.string().url().optional().or(z.literal("")),
   founderBio: z.string().max(800).optional(),
@@ -55,8 +57,12 @@ const editableSettingsSchema = z.object({
 });
 
 export async function GET() {
-  const settings = await getEditableSettings();
-  return NextResponse.json(settings);
+  try {
+    const settings = await getEditableSettings();
+    return NextResponse.json(settings);
+  } catch {
+    return NextResponse.json({ error: "Failed to load settings" }, { status: 500 });
+  }
 }
 
 export async function PATCH(request: NextRequest) {
@@ -92,7 +98,7 @@ export async function PATCH(request: NextRequest) {
         newsletterTitle: data.newsletterTitle,
         newsletterDescription: data.newsletterDescription,
       }),
-      updateThemeSettings({ logo: data.logo, favicon: data.favicon, copyright: data.copyright }),
+      updateThemeSettings({ logo: data.logo, favicon: data.favicon, copyright: data.copyright, themeMode: data.themeMode, accentColor: data.accentColor }),
       updateHomeSeo({
         title: data.seoDefaultTitle,
         description: data.seoDefaultDescription,
@@ -111,7 +117,8 @@ export async function PATCH(request: NextRequest) {
     ]);
     const settings = await getEditableSettings();
     return NextResponse.json(settings);
-  } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to save settings";
+    return NextResponse.json({ error: message }, { status: message === "Forbidden" ? 403 : 500 });
   }
 }

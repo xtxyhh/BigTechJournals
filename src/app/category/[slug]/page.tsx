@@ -37,7 +37,7 @@ export default async function CategoryPage({ params }: PageProps) {
   const gridStories = storyCards.slice(2);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-surface pb-20">
       <Navbar />
       <main className="pt-16">
         <CategoryHeader

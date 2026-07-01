@@ -67,12 +67,17 @@ async function getHomeData() {
       image: s.image,
     }));
 
-    const categoryItems = categories.slice(0, 5).map((c) => ({
-      label: c.name,
-      slug: c.slug,
-      image: safeImageUrl(c.image, DEFAULT_IMAGES.categoryTech),
-      count: `${c._count.stories}+ Stories`,
-    }));
+    const categoryItems = categories
+      .filter((c) => c._count.stories > 0)
+      .sort((a, b) => b._count.stories - a._count.stories)
+      .slice(0, 5)
+      .map((c) => ({
+        label: c.name,
+        slug: c.slug,
+        image: safeImageUrl(c.image, DEFAULT_IMAGES.categoryTech),
+        count: `${c._count.stories} ${c._count.stories === 1 ? "Story" : "Stories"}`,
+        storyCount: c._count.stories,
+      }));
 
     const latestMapped = latest.map((s) => ({
       title: s.title,

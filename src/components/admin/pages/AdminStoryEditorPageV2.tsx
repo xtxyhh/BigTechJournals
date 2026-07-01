@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Eye, Hash, Monitor, Save, Send, Smartphone, Tablet } from "lucide-react";
+import { Calendar, Eye, Hash, Link as LinkIcon, Monitor, Save, Send, Smartphone, Tablet } from "lucide-react";
 import TipTapEditor from "@/components/editor/TipTapEditor";
 import MediaUploader from "@/components/admin/MediaUploader";
+import StoryCoverImageEditor from "@/components/admin/StoryCoverImageEditor";
+import { DEFAULT_STORY_IMAGE_PLACEMENT, normalizeStoryImagePlacement, storyImageStyle, type StoryImageCropMode, type StoryImagePlacement } from "@/lib/story-image";
 
 type CatalogItem = { id: string; name: string; slug: string };
 type Status = "draft" | "published" | "scheduled";
@@ -15,7 +17,31 @@ type LoadedStory = {
   excerpt?: string;
   content?: string;
   coverImage?: string | null;
+  coverImageZoom?: number;
+  coverImageX?: number;
+  coverImageY?: number;
+  coverImageObjectPosition?: string;
+  coverImageCropMode?: string;
   seoKeywords?: string | null;
+  authorName?: string | null;
+  authorImage?: string | null;
+  authorRole?: string | null;
+  linkedin?: string | null;
+  twitter?: string | null;
+  instagram?: string | null;
+  github?: string | null;
+  candidatePhoto?: string | null;
+  country?: string | null;
+  experience?: string | null;
+  previousCompany?: string | null;
+  salary?: string | null;
+  canonicalUrl?: string | null;
+  outcomeType?: string | null;
+  outcomeText?: string | null;
+  careerStage?: string | null;
+  trending?: boolean;
+  connectLabel?: string | null;
+  connectUrl?: string | null;
   companyId?: string | null;
   currentCompany?: string | null;
   company?: { name?: string | null } | null;
@@ -54,6 +80,16 @@ function jsonToHtml(value: unknown) {
   return "";
 }
 
+function isValidOptionalAbsoluteUrl(value: string) {
+  if (!value.trim()) return true;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -61,6 +97,7 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  const [coverImagePlacement, setCoverImagePlacement] = useState<StoryImagePlacement>(DEFAULT_STORY_IMAGE_PLACEMENT);
   const [tags, setTags] = useState("");
   const [companyIds, setCompanyIds] = useState<string[]>([]);
   const [companyBadges, setCompanyBadges] = useState("");
@@ -73,6 +110,25 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
   const [seoTitle, setSeoTitle] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
   const [ogImage, setOgImage] = useState("");
+  const [authorName, setAuthorName] = useState("BigTechJournals Editorial");
+  const [authorImage, setAuthorImage] = useState("");
+  const [authorRole, setAuthorRole] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [github, setGithub] = useState("");
+  const [candidatePhoto, setCandidatePhoto] = useState("");
+  const [country, setCountry] = useState("");
+  const [experience, setExperience] = useState("");
+  const [previousCompany, setPreviousCompany] = useState("");
+  const [salary, setSalary] = useState("");
+  const [canonicalUrl, setCanonicalUrl] = useState("");
+  const [outcomeType, setOutcomeType] = useState("");
+  const [outcomeText, setOutcomeText] = useState("");
+  const [careerStage, setCareerStage] = useState("");
+  const [trending, setTrending] = useState(false);
+  const [connectLabel, setConnectLabel] = useState("Connect");
+  const [connectUrl, setConnectUrl] = useState("");
   const [interviewProcess, setInterviewProcess] = useState("");
   const [resourcesUsed, setResourcesUsed] = useState("");
   const [tips, setTips] = useState("");
@@ -99,6 +155,13 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         setExcerpt(story.excerpt ?? "");
         setContent(story.content ?? "");
         setCoverImage(story.coverImage ?? "");
+        setCoverImagePlacement(normalizeStoryImagePlacement({
+          zoom: story.coverImageZoom,
+          x: story.coverImageX,
+          y: story.coverImageY,
+          objectPosition: story.coverImageObjectPosition,
+          cropMode: story.coverImageCropMode as StoryImageCropMode,
+        }));
         setTags(story.seoKeywords ?? "");
         const linkedCompanyIds = (story.companies ?? []).map((item) => item.companyId);
         setCompanyIds(linkedCompanyIds.length ? linkedCompanyIds : story.companyId ? [story.companyId] : []);
@@ -109,6 +172,25 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         setScheduledAt(story.scheduledAt ? new Date(story.scheduledAt).toISOString().slice(0, 16) : "");
         setSeoTitle(story.seoTitle ?? "");
         setSeoDescription(story.seoDescription ?? "");
+        setAuthorName(story.authorName ?? "BigTechJournals Editorial");
+        setAuthorImage(story.authorImage ?? "");
+        setAuthorRole(story.authorRole ?? "");
+        setLinkedin(story.linkedin ?? "");
+        setTwitter(story.twitter ?? "");
+        setInstagram(story.instagram ?? "");
+        setGithub(story.github ?? "");
+        setCandidatePhoto(story.candidatePhoto ?? "");
+        setCountry(story.country ?? "");
+        setExperience(story.experience ?? "");
+        setPreviousCompany(story.previousCompany ?? "");
+        setSalary(story.salary ?? "");
+        setCanonicalUrl(story.canonicalUrl ?? "");
+        setOutcomeType(story.outcomeType ?? "");
+        setOutcomeText(story.outcomeText ?? "");
+        setCareerStage(story.careerStage ?? "");
+        setTrending(Boolean(story.trending));
+        setConnectLabel(story.connectLabel ?? "Connect");
+        setConnectUrl(story.connectUrl ?? "");
         setInterviewProcess(jsonToHtml(story.interviewProcess));
         setResourcesUsed(jsonToHtml(story.resources));
         setTips(jsonToHtml(story.advice));
@@ -120,12 +202,13 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
     queueMicrotask(() => {
       const savedDraft = window.localStorage.getItem(draftKey);
       if (!savedDraft) return;
-      const draft = JSON.parse(savedDraft) as Partial<Record<string, string | boolean | string[]>>;
+      const draft = JSON.parse(savedDraft) as Partial<Record<string, unknown>>;
       setTitle((draft.title as string) ?? "");
       setSlug((draft.slug as string) ?? "");
       setExcerpt((draft.excerpt as string) ?? "");
       setContent((draft.content as string) ?? "");
       setCoverImage((draft.coverImage as string) ?? "");
+      setCoverImagePlacement(normalizeStoryImagePlacement(draft.coverImagePlacement as Partial<StoryImagePlacement> | undefined));
       setTags((draft.tags as string) ?? "");
       setCompanyIds((draft.companyIds as string[]) ?? ((draft.companyId as string) ? [draft.companyId as string] : []));
       setCategoryIds((draft.categoryIds as string[]) ?? []);
@@ -133,6 +216,25 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
       setSeoTitle((draft.seoTitle as string) ?? "");
       setSeoDescription((draft.seoDescription as string) ?? "");
       setOgImage((draft.ogImage as string) ?? "");
+      setAuthorName((draft.authorName as string) ?? "BigTechJournals Editorial");
+      setAuthorImage((draft.authorImage as string) ?? "");
+      setAuthorRole((draft.authorRole as string) ?? "");
+      setLinkedin((draft.linkedin as string) ?? "");
+      setTwitter((draft.twitter as string) ?? "");
+      setInstagram((draft.instagram as string) ?? "");
+      setGithub((draft.github as string) ?? "");
+      setCandidatePhoto((draft.candidatePhoto as string) ?? "");
+      setCountry((draft.country as string) ?? "");
+      setExperience((draft.experience as string) ?? "");
+      setPreviousCompany((draft.previousCompany as string) ?? "");
+      setSalary((draft.salary as string) ?? "");
+      setCanonicalUrl((draft.canonicalUrl as string) ?? "");
+      setOutcomeType((draft.outcomeType as string) ?? "");
+      setOutcomeText((draft.outcomeText as string) ?? "");
+      setCareerStage((draft.careerStage as string) ?? "");
+      setTrending(Boolean(draft.trending));
+      setConnectLabel((draft.connectLabel as string) ?? "Connect");
+      setConnectUrl((draft.connectUrl as string) ?? "");
       setInterviewProcess((draft.interviewProcess as string) ?? "");
       setResourcesUsed((draft.resourcesUsed as string) ?? "");
       setTips((draft.tips as string) ?? "");
@@ -156,6 +258,7 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         excerpt,
         content,
         coverImage,
+        coverImagePlacement,
         tags,
         companyIds,
         companyBadges,
@@ -164,6 +267,25 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         seoTitle,
         seoDescription,
         ogImage,
+        authorName,
+        authorImage,
+        authorRole,
+        linkedin,
+        twitter,
+        instagram,
+        github,
+        candidatePhoto,
+        country,
+        experience,
+        previousCompany,
+        salary,
+        canonicalUrl,
+        outcomeType,
+        outcomeText,
+        careerStage,
+        trending,
+        connectLabel,
+        connectUrl,
         interviewProcess,
         resourcesUsed,
         tips,
@@ -172,10 +294,14 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
       if (title || content || excerpt) setSaveState("autosaved");
     }, 1200);
     return () => window.clearTimeout(timer);
-  }, [draftKey, title, slug, excerpt, content, coverImage, tags, companyIds, companyBadges, categoryIds, featured, seoTitle, seoDescription, ogImage, interviewProcess, resourcesUsed, tips, timeline]);
+  }, [draftKey, title, slug, excerpt, content, coverImage, coverImagePlacement, tags, companyIds, companyBadges, categoryIds, featured, seoTitle, seoDescription, ogImage, authorName, authorImage, authorRole, linkedin, twitter, instagram, github, candidatePhoto, country, experience, previousCompany, salary, canonicalUrl, outcomeType, outcomeText, careerStage, trending, connectLabel, connectUrl, interviewProcess, resourcesUsed, tips, timeline]);
 
   const save = async (nextStatus: Status = status) => {
     if (!title.trim()) return;
+    if (![connectUrl, linkedin, twitter, instagram, github, canonicalUrl].every(isValidOptionalAbsoluteUrl)) {
+      setSaveState("error");
+      return;
+    }
     setSaving(true);
     setSaveState("idle");
     const res = await fetch("/api/admin/stories", {
@@ -188,7 +314,30 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         excerpt,
         content,
         coverImage,
-        authorName: "BigTechJournals Editorial",
+        coverImageZoom: coverImagePlacement.zoom,
+        coverImageX: coverImagePlacement.x,
+        coverImageY: coverImagePlacement.y,
+        coverImageObjectPosition: coverImagePlacement.objectPosition,
+        coverImageCropMode: coverImagePlacement.cropMode,
+        authorName,
+        authorImage,
+        authorRole,
+        linkedin,
+        twitter,
+        instagram,
+        github,
+        candidatePhoto,
+        country,
+        experience,
+        previousCompany,
+        salary,
+        canonicalUrl,
+        outcomeType,
+        outcomeText,
+        careerStage,
+        trending,
+        connectLabel: connectLabel.trim() || "Connect",
+        connectUrl,
         published: nextStatus === "published",
         status: nextStatus,
         featured,
@@ -236,7 +385,14 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
           </div>
           <textarea value={excerpt} onChange={(event) => setExcerpt(event.target.value)} rows={3} placeholder="Subtitle / short excerpt" className={`${input} mt-4 resize-none`} />
           <div className="mt-4">
-            <MediaUploader label="Cover image" value={coverImage} onChange={setCoverImage} />
+            <StoryCoverImageEditor
+              image={coverImage}
+              placement={coverImagePlacement}
+              title={title}
+              excerpt={excerpt}
+              onImageChange={setCoverImage}
+              onPlacementChange={setCoverImagePlacement}
+            />
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
             <div className="grid max-h-56 gap-2 overflow-y-auto rounded-2xl border border-white/[0.08] bg-black/20 p-3">
@@ -295,6 +451,36 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
           </div>
         </EditorSection>
 
+        <EditorSection title="Author & Profile" description="Author details, social links, and optional outcome metadata.">
+          <div className="grid gap-3 lg:grid-cols-2">
+            <input value={authorName} onChange={(event) => setAuthorName(event.target.value)} placeholder="Author name" className={input} />
+            <input value={authorRole} onChange={(event) => setAuthorRole(event.target.value)} placeholder="Author role" className={input} />
+            <input value={authorImage} onChange={(event) => setAuthorImage(event.target.value)} placeholder="Author image URL" className={input} />
+            <input value={candidatePhoto} onChange={(event) => setCandidatePhoto(event.target.value)} placeholder="Candidate photo URL" className={input} />
+            <input value={linkedin} onChange={(event) => setLinkedin(event.target.value)} placeholder="LinkedIn URL" className={input} />
+            <input value={twitter} onChange={(event) => setTwitter(event.target.value)} placeholder="X / Twitter URL" className={input} />
+            <input value={instagram} onChange={(event) => setInstagram(event.target.value)} placeholder="Instagram URL" className={input} />
+            <input value={github} onChange={(event) => setGithub(event.target.value)} placeholder="GitHub URL" className={input} />
+            <input value={country} onChange={(event) => setCountry(event.target.value)} placeholder="Country" className={input} />
+            <input value={experience} onChange={(event) => setExperience(event.target.value)} placeholder="Experience" className={input} />
+            <input value={previousCompany} onChange={(event) => setPreviousCompany(event.target.value)} placeholder="Previous company" className={input} />
+            <input value={salary} onChange={(event) => setSalary(event.target.value)} placeholder="Salary / offer" className={input} />
+            <input value={careerStage} onChange={(event) => setCareerStage(event.target.value)} placeholder="Career stage" className={input} />
+            <select value={outcomeType} onChange={(event) => setOutcomeType(event.target.value)} className={input}>
+              <option value="">No outcome type</option>
+              <option value="positive">Positive</option>
+              <option value="neutral">Neutral</option>
+              <option value="negative">Negative</option>
+            </select>
+          </div>
+          <textarea value={outcomeText} onChange={(event) => setOutcomeText(event.target.value)} rows={3} placeholder="Outcome text" className={`${input} mt-3 resize-none`} />
+          <input value={canonicalUrl} onChange={(event) => setCanonicalUrl(event.target.value)} placeholder="Canonical URL" className={`${input} mt-3`} />
+          <label className="mt-4 flex min-h-11 items-center justify-between rounded-2xl bg-black/20 p-3 text-sm text-white/70">
+            Trending
+            <input type="checkbox" checked={trending} onChange={(event) => setTrending(event.target.checked)} />
+          </label>
+        </EditorSection>
+
         <EditorSection title="Preview" description="Check desktop, tablet, and mobile story framing before publishing.">
           <div className="mb-4 flex flex-wrap gap-2">
             {([
@@ -307,7 +493,7 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
               </button>
             ))}
           </div>
-          <PreviewCard mode={previewMode} title={title} excerpt={excerpt} coverImage={coverImage || ogImage} content={content} />
+          <PreviewCard mode={previewMode} title={title} excerpt={excerpt} coverImage={coverImage || ogImage} placement={coverImagePlacement} content={content} />
         </EditorSection>
       </section>
 
@@ -335,8 +521,15 @@ export default function AdminStoryEditorPageV2({ storyId }: { storyId?: string }
         </div>
 
         <div className={panel}>
+          <h2 className="mb-4 flex items-center gap-2 font-semibold text-white"><LinkIcon className="h-4 w-4" /> Connect</h2>
+          <input value={connectLabel} onChange={(event) => setConnectLabel(event.target.value)} placeholder="Button label" className={input} />
+          <input value={connectUrl} onChange={(event) => setConnectUrl(event.target.value)} placeholder="https://linkedin.com/in/..." className={`${input} mt-3`} />
+          {connectUrl && !isValidOptionalAbsoluteUrl(connectUrl) && <p className="mt-2 text-xs text-red-300">Enter a valid http or https URL.</p>}
+        </div>
+
+        <div className={panel}>
           <h2 className="mb-4 flex items-center gap-2 font-semibold text-white"><Eye className="h-4 w-4" /> Snapshot</h2>
-          <PreviewCard mode="mobile" title={title} excerpt={excerpt} coverImage={coverImage || ogImage} content={content} compact />
+          <PreviewCard mode="mobile" title={title} excerpt={excerpt} coverImage={coverImage || ogImage} placement={coverImagePlacement} content={content} compact />
         </div>
       </aside>
     </div>
@@ -363,13 +556,13 @@ function EditorBlock({ title, value, onChange, placeholder }: { title: string; v
   );
 }
 
-function PreviewCard({ mode, title, excerpt, coverImage, content, compact = false }: { mode: PreviewMode; title: string; excerpt: string; coverImage: string; content: string; compact?: boolean }) {
+function PreviewCard({ mode, title, excerpt, coverImage, placement, content, compact = false }: { mode: PreviewMode; title: string; excerpt: string; coverImage: string; placement: StoryImagePlacement; content: string; compact?: boolean }) {
   const width = mode === "desktop" ? "max-w-4xl" : mode === "tablet" ? "max-w-2xl" : "max-w-sm";
   return (
     <div className={`mx-auto overflow-hidden rounded-2xl bg-black/20 ${width}`}>
       {coverImage ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={coverImage} alt="" className="aspect-video w-full object-cover" />
+        <img src={coverImage} alt="" className="aspect-video w-full" style={storyImageStyle(placement)} />
       ) : (
         <div className="aspect-video w-full bg-gradient-to-br from-blue-500/20 to-cyan-400/10" />
       )}

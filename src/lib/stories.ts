@@ -4,6 +4,7 @@ import { formatReadTime, formatViews } from "./seo";
 import type { StoryCardProps } from "@/components/stories/StoryCard";
 import { searchPlatformContent } from "./platform-content";
 import { DEFAULT_IMAGES, safeImageUrl } from "./images";
+import { normalizeStoryImagePlacement } from "./story-image";
 
 export type StorySort = "latest" | "most-viewed" | "trending";
 
@@ -36,6 +37,13 @@ export function toStoryCard(
     readTime: formatReadTime(story.readTime),
     views: formatViews(story.views),
     image: safeImageUrl(story.coverImage, DEFAULT_IMAGES.storyCover),
+    imagePlacement: normalizeStoryImagePlacement({
+      zoom: story.coverImageZoom,
+      x: story.coverImageX,
+      y: story.coverImageY,
+      objectPosition: story.coverImageObjectPosition,
+      cropMode: story.coverImageCropMode as "cover" | "contain",
+    }),
     outcome: story.outcomeText
       ? {
           type: (story.outcomeType as "positive" | "neutral" | "negative") ?? "neutral",

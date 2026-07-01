@@ -88,6 +88,8 @@ export async function getEditableSettings() {
     ...settings,
     logo: theme.logo ?? "",
     favicon: theme.favicon ?? "",
+    themeMode: theme.mode,
+    accentColor: theme.accent,
     heroBackgroundImage: settings.heroBackgroundImage ?? theme.logo ?? "",
     heroImage: settings.heroBackgroundImage ?? "",
     copyright: typeof footerSettings.copyright === "string" ? footerSettings.copyright : `© ${new Date().getFullYear()} BigTechJournals`,
@@ -126,6 +128,8 @@ export async function updateThemeSettings(data: {
   logo?: string;
   favicon?: string;
   copyright?: string;
+  themeMode?: string;
+  accentColor?: string;
 }) {
   return db.themeConfig.upsert({
     where: { id: "theme" },
@@ -133,11 +137,15 @@ export async function updateThemeSettings(data: {
       id: "theme",
       logo: data.logo || null,
       favicon: data.favicon || null,
+      mode: data.themeMode || "dark",
+      accent: data.accentColor || "#3b82f6",
       footerSettings: { copyright: data.copyright ?? "" },
     },
     update: {
       ...(data.logo !== undefined ? { logo: data.logo || null } : {}),
       ...(data.favicon !== undefined ? { favicon: data.favicon || null } : {}),
+      ...(data.themeMode !== undefined ? { mode: data.themeMode || "dark" } : {}),
+      ...(data.accentColor !== undefined ? { accent: data.accentColor || "#3b82f6" } : {}),
       ...(data.copyright !== undefined ? { footerSettings: { copyright: data.copyright } } : {}),
     },
   });
